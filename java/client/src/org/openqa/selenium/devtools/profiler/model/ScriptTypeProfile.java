@@ -1,101 +1,70 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.profiler.model;
 
 import org.openqa.selenium.Beta;
-import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.json.JsonInput;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 /**
- * Type profile data collected during runtime for a JavaScript script.EXPERIMENTAL
+ * Type profile data collected during runtime for a JavaScript script.
  */
-@Beta
+@org.openqa.selenium.Beta()
 public class ScriptTypeProfile {
 
-  /**
-   * JavaScript script id.
-   */
-  private final String scriptId;
-  /**
-   * JavaScript script name or url.
-   */
-  private final String url;
-  /**
-   * Type profile entries for parameters and return values of the functions in the script.
-   */
-  private final List<TypeProfileEntry> entries;
+    private final org.openqa.selenium.devtools.runtime.model.ScriptId scriptId;
 
-  public ScriptTypeProfile(String scriptId, String url,
-                           List<TypeProfileEntry> entries) {
-    validateEntries(entries);
-    Objects.requireNonNull(url, "url is require");
-    Objects.requireNonNull(scriptId, "scriptId is require");
+    private final java.lang.String url;
 
-    this.scriptId = scriptId;
-    this.url = url;
-    this.entries = entries;
-  }
+    private final java.util.List<org.openqa.selenium.devtools.profiler.model.TypeProfileEntry> entries;
 
-  private static ScriptTypeProfile fromJson(JsonInput input) {
-    String scriptId = input.nextString();
-    String url = null;
-    List<TypeProfileEntry> entries = null;
-    while (input.hasNext()) {
-      switch (input.nextName()) {
-        case "url":
-          url = input.nextString();
-          break;
-        case "entries":
-          entries = new ArrayList<>();
-          input.beginArray();
-          while (input.hasNext()) {
-            entries.add(input.read(ScriptTypeProfile.class));
-          }
-          input.endArray();
-          break;
-        default:
-          input.skipValue();
-          break;
-      }
+    public ScriptTypeProfile(org.openqa.selenium.devtools.runtime.model.ScriptId scriptId, java.lang.String url, java.util.List<org.openqa.selenium.devtools.profiler.model.TypeProfileEntry> entries) {
+        this.scriptId = java.util.Objects.requireNonNull(scriptId, "scriptId is required");
+        this.url = java.util.Objects.requireNonNull(url, "url is required");
+        this.entries = java.util.Objects.requireNonNull(entries, "entries is required");
     }
-    return new ScriptTypeProfile(scriptId, url, entries);
-  }
 
-  public String getScriptId() {
-    return scriptId;
-  }
-
-  public String getUrl() {
-    return url;
-  }
-
-  public List<TypeProfileEntry> getEntries() {
-    return entries;
-  }
-
-  private void validateEntries(List<TypeProfileEntry> entries) {
-    Objects.requireNonNull(entries, "entries are require");
-    if (entries.isEmpty()) {
-      throw new DevToolsException("entries are require");
+    /**
+     * JavaScript script id.
+     */
+    public org.openqa.selenium.devtools.runtime.model.ScriptId getScriptId() {
+        return scriptId;
     }
-  }
+
+    /**
+     * JavaScript script name or url.
+     */
+    public java.lang.String getUrl() {
+        return url;
+    }
+
+    /**
+     * Type profile entries for parameters and return values of the functions in the script.
+     */
+    public java.util.List<org.openqa.selenium.devtools.profiler.model.TypeProfileEntry> getEntries() {
+        return entries;
+    }
+
+    private static ScriptTypeProfile fromJson(JsonInput input) {
+        org.openqa.selenium.devtools.runtime.model.ScriptId scriptId = null;
+        java.lang.String url = null;
+        java.util.List<org.openqa.selenium.devtools.profiler.model.TypeProfileEntry> entries = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "scriptId":
+                    scriptId = input.read(org.openqa.selenium.devtools.runtime.model.ScriptId.class);
+                    break;
+                case "url":
+                    url = input.nextString();
+                    break;
+                case "entries":
+                    entries = input.read(new com.google.common.reflect.TypeToken<java.util.List<org.openqa.selenium.devtools.profiler.model.TypeProfileEntry>>() {
+                    }.getType());
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new ScriptTypeProfile(scriptId, url, entries);
+    }
 }

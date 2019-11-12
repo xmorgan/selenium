@@ -1,160 +1,118 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.profiler;
-
-import static org.openqa.selenium.devtools.ConverterFunctions.map;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
-import com.google.common.reflect.TypeToken;
 
 import org.openqa.selenium.Beta;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.Event;
-import org.openqa.selenium.devtools.profiler.model.ConsoleProfileFinished;
-import org.openqa.selenium.devtools.profiler.model.ConsoleProfileStarted;
-import org.openqa.selenium.devtools.profiler.model.Profile;
-import org.openqa.selenium.devtools.profiler.model.ScriptCoverage;
-import org.openqa.selenium.devtools.profiler.model.ScriptTypeProfile;
-
-import java.util.List;
-import java.util.Optional;
+import org.openqa.selenium.devtools.ConverterFunctions;
+import com.google.common.collect.ImmutableMap;
+import org.openqa.selenium.json.JsonInput;
 
 public class Profiler {
 
-  /**
-   * Disable Profiling
-   */
-  public static Command<Void> disable() {
-    return new Command<>("Profiler.disable", ImmutableMap.of());
-  }
+    public static Command<Void> disable() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Profiler.disable", params.build());
+    }
 
-  /**
-   * Enable Profiling
-   */
-  public static Command<Void> enable() {
-    return new Command<>("Profiler.enable", ImmutableMap.of());
-  }
+    public static Command<Void> enable() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Profiler.enable", params.build());
+    }
 
-  /**
-   * start Profiling process
-   */
-  public static Command<Void> start() {
-    return new Command<>("Profiler.start", ImmutableMap.of());
-  }
-
-  /**
-   * stop Profiling process
-   **/
-  public static Command<Profile> stop() {
-    return new Command<>("Profiler.stop", ImmutableMap.of(), map("profile", Profile.class));
-  }
-
-  /**
-   * Collect coverage data for the current isolate. The coverage data may be incomplete due to garbage collection.
-   **/
-  public static Command<List<ScriptCoverage>> getBestEffortCoverage() {
-    return new Command<>(
-        "Profiler.getBestEffortCoverage", ImmutableMap.of(),
-        map("result", new TypeToken<List<ScriptCoverage>>() {
+    /**
+     * Collect coverage data for the current isolate. The coverage data may be incomplete due to
+     * garbage collection.
+     */
+    public static Command<java.util.List<org.openqa.selenium.devtools.profiler.model.ScriptCoverage>> getBestEffortCoverage() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Profiler.getBestEffortCoverage", params.build(), ConverterFunctions.map("result", new com.google.common.reflect.TypeToken<java.util.List<org.openqa.selenium.devtools.profiler.model.ScriptCoverage>>() {
         }.getType()));
-  }
+    }
 
-  /**
-   * Changes CPU profiler sampling interval. Must be called before CPU profiles recording started.
-   *
-   * @param interval New sampling interval in microseconds.
-   */
-  public static Command<Void> setSamplingInterval(int interval) {
-    return new Command<>("Profiler.setSamplingInterval", ImmutableMap.of("interval", interval));
-  }
+    /**
+     * Changes CPU profiler sampling interval. Must be called before CPU profiles recording started.
+     */
+    public static Command<Void> setSamplingInterval(java.lang.Integer interval) {
+        java.util.Objects.requireNonNull(interval, "interval is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("interval", interval);
+        return new Command<>("Profiler.setSamplingInterval", params.build());
+    }
 
-  /**
-   * Enable precise code coverage. Coverage data for JavaScript executed before enabling precise code coverage may be
-   * incomplete. Enabling prevents running optimized code and resets execution counters.
-   *
-   * @param callCount Collect accurate call counts beyond simple 'covered' or 'not covered'.
-   * @param detailed  Collect block-based coverage.
-   */
-  public static Command<Void> startPreciseCoverage(
-      Optional<Boolean> callCount, Optional<Boolean> detailed) {
-    Builder<String, Object> mapBuilder = ImmutableMap.builder();
-    callCount.ifPresent(value -> mapBuilder.put("callCount", value));
-    detailed.ifPresent(value -> mapBuilder.put("detailed", value));
-    return new Command<>("Profiler.startPreciseCoverage", mapBuilder.build());
-  }
+    public static Command<Void> start() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Profiler.start", params.build());
+    }
 
-  /**
-   * Enable type profile
-   */
-  @Beta
-  public static Command<Void> startTypeProfile() {
-    return new Command<>("Profiler.startTypeProfile", ImmutableMap.of());
-  }
+    /**
+     * Enable precise code coverage. Coverage data for JavaScript executed before enabling precise code
+     * coverage may be incomplete. Enabling prevents running optimized code and resets execution
+     * counters.
+     */
+    public static Command<Void> startPreciseCoverage(java.util.Optional<java.lang.Boolean> callCount, java.util.Optional<java.lang.Boolean> detailed) {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        callCount.ifPresent(p -> params.put("callCount", p));
+        detailed.ifPresent(p -> params.put("detailed", p));
+        return new Command<>("Profiler.startPreciseCoverage", params.build());
+    }
 
-  /**
-   * Disable precise code coverage. Disabling releases unnecessary execution count records and allows executing
-   * optimized code.
-   */
-  public static Command<Void> stopPreciseCoverage() {
-    return new Command<Void>("Profiler.stopPreciseCoverage", ImmutableMap.of());
-  }
+    /**
+     * Enable type profile.
+     */
+    @Beta()
+    public static Command<Void> startTypeProfile() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Profiler.startTypeProfile", params.build());
+    }
 
-  /**
-   * Disable type profile. Disabling releases type profile data collected so far.EXPERIMENTAL
-   */
-  @Beta
-  public static Command<Void> stopTypeProfile() {
-    return new Command<>("Profiler.stopTypeProfile", ImmutableMap.of());
-  }
+    public static Command<org.openqa.selenium.devtools.profiler.model.Profile> stop() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Profiler.stop", params.build(), ConverterFunctions.map("profile", org.openqa.selenium.devtools.profiler.model.Profile.class));
+    }
 
-  /**
-   * Collect coverage data for the current isolate, and resets execution counters. Precise code coverage needs to have
-   * started.
-   */
-  public static Command<List<ScriptCoverage>> takePreciseCoverage() {
-    return new Command<>(
-        "Profiler.takePreciseCoverage",
-        ImmutableMap.of(),
-        map("result", new TypeToken<List<ScriptCoverage>>() {
+    /**
+     * Disable precise code coverage. Disabling releases unnecessary execution count records and allows
+     * executing optimized code.
+     */
+    public static Command<Void> stopPreciseCoverage() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Profiler.stopPreciseCoverage", params.build());
+    }
+
+    /**
+     * Disable type profile. Disabling releases type profile data collected so far.
+     */
+    @Beta()
+    public static Command<Void> stopTypeProfile() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Profiler.stopTypeProfile", params.build());
+    }
+
+    /**
+     * Collect coverage data for the current isolate, and resets execution counters. Precise code
+     * coverage needs to have started.
+     */
+    public static Command<java.util.List<org.openqa.selenium.devtools.profiler.model.ScriptCoverage>> takePreciseCoverage() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Profiler.takePreciseCoverage", params.build(), ConverterFunctions.map("result", new com.google.common.reflect.TypeToken<java.util.List<org.openqa.selenium.devtools.profiler.model.ScriptCoverage>>() {
         }.getType()));
-  }
+    }
 
-  /**
-   * Collect type profile.EXPERIMENTAL
-   */
-  @Beta
-  public static Command<List<ScriptCoverage>> takeTypeProfile() {
-    return new Command<>(
-        "Profiler.takeTypeProfile",
-        ImmutableMap.of(),
-        map("result", new TypeToken<List<ScriptTypeProfile>>() {
+    /**
+     * Collect type profile.
+     */
+    @Beta()
+    public static Command<java.util.List<org.openqa.selenium.devtools.profiler.model.ScriptTypeProfile>> takeTypeProfile() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Profiler.takeTypeProfile", params.build(), ConverterFunctions.map("result", new com.google.common.reflect.TypeToken<java.util.List<org.openqa.selenium.devtools.profiler.model.ScriptTypeProfile>>() {
         }.getType()));
-  }
+    }
 
-  public static Event<ConsoleProfileFinished> consoleProfileFinished() {
-    return new Event<>("Profiler.consoleProfileFinished", map("id", ConsoleProfileFinished.class));
-  }
+    public static Event<org.openqa.selenium.devtools.profiler.model.ConsoleProfileFinished> consoleProfileFinished() {
+        return new Event<>("Profiler.consoleProfileFinished", input -> input.read(org.openqa.selenium.devtools.profiler.model.ConsoleProfileFinished.class));
+    }
 
-  /**
-   * Sent when new profile recording is started using console.profile() call.
-   */
-  public static Event<ConsoleProfileStarted> consoleProfileStarted() {
-    return new Event<>("Profiler.consoleProfileStarted", map("id", ConsoleProfileStarted.class));
-  }
+    public static Event<org.openqa.selenium.devtools.profiler.model.ConsoleProfileStarted> consoleProfileStarted() {
+        return new Event<>("Profiler.consoleProfileStarted", input -> input.read(org.openqa.selenium.devtools.profiler.model.ConsoleProfileStarted.class));
+    }
 }

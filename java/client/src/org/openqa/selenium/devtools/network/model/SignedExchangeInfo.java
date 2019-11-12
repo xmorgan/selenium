@@ -1,107 +1,84 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.network.model;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.List;
+import org.openqa.selenium.Beta;
+import org.openqa.selenium.json.JsonInput;
 
 /**
- * Information about a signed exchange response
+ * Information about a signed exchange response.
  */
+@org.openqa.selenium.Beta()
 public class SignedExchangeInfo {
 
-  private Response outerResponse;
+    private final org.openqa.selenium.devtools.network.model.Response outerResponse;
 
-  private SignedExchangeHeader header;
+    private final org.openqa.selenium.devtools.network.model.SignedExchangeHeader header;
 
-  private SecurityDetails securityDetails;
+    private final org.openqa.selenium.devtools.network.model.SecurityDetails securityDetails;
 
-  private List<SignedExchangeError> errors;
+    private final java.util.List<org.openqa.selenium.devtools.network.model.SignedExchangeError> errors;
 
-  public SignedExchangeInfo() {
-  }
+    public SignedExchangeInfo(org.openqa.selenium.devtools.network.model.Response outerResponse, org.openqa.selenium.devtools.network.model.SignedExchangeHeader header, org.openqa.selenium.devtools.network.model.SecurityDetails securityDetails, java.util.List<org.openqa.selenium.devtools.network.model.SignedExchangeError> errors) {
+        this.outerResponse = java.util.Objects.requireNonNull(outerResponse, "outerResponse is required");
+        this.header = header;
+        this.securityDetails = securityDetails;
+        this.errors = errors;
+    }
 
-  SignedExchangeInfo(Response outerResponse,
-                     SignedExchangeHeader header,
-                     SecurityDetails securityDetails,
-                     List<SignedExchangeError> errors) {
-    this.outerResponse =
-        requireNonNull(outerResponse, "'outerResponse' is required for SignedExchangeInfo");
-    this.header = header;
-    this.securityDetails = securityDetails;
-    this.errors = errors;
-  }
+    /**
+     * The outer response of signed HTTP exchange which was received from network.
+     */
+    public org.openqa.selenium.devtools.network.model.Response getOuterResponse() {
+        return outerResponse;
+    }
 
-  /**
-   * The outer response of signed HTTP exchange which was received from network.
-   */
-  public Response getOuterResponse() {
-    return outerResponse;
-  }
+    /**
+     * Information about the signed exchange header.
+     */
+    public org.openqa.selenium.devtools.network.model.SignedExchangeHeader getHeader() {
+        return header;
+    }
 
-  /**
-   * The outer response of signed HTTP exchange which was received from network.
-   */
-  public void setOuterResponse(Response outerResponse) {
-    this.outerResponse = outerResponse;
-  }
+    /**
+     * Security details for the signed exchange header.
+     */
+    public org.openqa.selenium.devtools.network.model.SecurityDetails getSecurityDetails() {
+        return securityDetails;
+    }
 
-  /**
-   * Information about the signed exchange header.
-   */
-  public SignedExchangeHeader getHeader() {
-    return header;
-  }
+    /**
+     * Errors occurred while handling the signed exchagne.
+     */
+    public java.util.List<org.openqa.selenium.devtools.network.model.SignedExchangeError> getErrors() {
+        return errors;
+    }
 
-  /**
-   * Information about the signed exchange header.
-   */
-  public void setHeader(SignedExchangeHeader header) {
-    this.header = header;
-  }
-
-  /**
-   * Security details for the signed exchange header.
-   */
-  public SecurityDetails getSecurityDetails() {
-    return securityDetails;
-  }
-
-  /**
-   * Security details for the signed exchange header.
-   */
-  public void setSecurityDetails(SecurityDetails securityDetails) {
-    this.securityDetails = securityDetails;
-  }
-
-  /**
-   * Errors occurred while handling the signed exchagne.
-   */
-  public List<SignedExchangeError> getErrors() {
-    return errors;
-  }
-
-  /**
-   * Errors occurred while handling the signed exchagne.
-   */
-  public void setErrors(List<SignedExchangeError> errors) {
-    this.errors = errors;
-  }
-
+    private static SignedExchangeInfo fromJson(JsonInput input) {
+        org.openqa.selenium.devtools.network.model.Response outerResponse = null;
+        org.openqa.selenium.devtools.network.model.SignedExchangeHeader header = null;
+        org.openqa.selenium.devtools.network.model.SecurityDetails securityDetails = null;
+        java.util.List<org.openqa.selenium.devtools.network.model.SignedExchangeError> errors = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "outerResponse":
+                    outerResponse = input.read(org.openqa.selenium.devtools.network.model.Response.class);
+                    break;
+                case "header":
+                    header = input.read(org.openqa.selenium.devtools.network.model.SignedExchangeHeader.class);
+                    break;
+                case "securityDetails":
+                    securityDetails = input.read(org.openqa.selenium.devtools.network.model.SecurityDetails.class);
+                    break;
+                case "errors":
+                    errors = input.read(new com.google.common.reflect.TypeToken<java.util.List<org.openqa.selenium.devtools.network.model.SignedExchangeError>>() {
+                    }.getType());
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new SignedExchangeInfo(outerResponse, header, securityDetails, errors);
+    }
 }

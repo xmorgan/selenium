@@ -1,49 +1,41 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.profiler.model;
 
 import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
 
-import java.util.Objects;
-
 /**
- * Describes a type collected during runtime.EXPERIMENTAL
+ * Describes a type collected during runtime.
  */
-@Beta
+@org.openqa.selenium.Beta()
 public class TypeObject {
 
-  /**
-   * Name of a type collected with type profiling.
-   */
-  private final String name;
+    private final java.lang.String name;
 
-  public TypeObject(String name) {
-    Objects.requireNonNull(name, "name is require");
-    this.name = name;
-  }
+    public TypeObject(java.lang.String name) {
+        this.name = java.util.Objects.requireNonNull(name, "name is required");
+    }
 
-  private static TypeObject fromJson(JsonInput input) {
-    return new TypeObject(input.nextString());
-  }
+    /**
+     * Name of a type collected with type profiling.
+     */
+    public java.lang.String getName() {
+        return name;
+    }
 
-  public String getName() {
-    return name;
-  }
-
+    private static TypeObject fromJson(JsonInput input) {
+        java.lang.String name = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "name":
+                    name = input.nextString();
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new TypeObject(name);
+    }
 }

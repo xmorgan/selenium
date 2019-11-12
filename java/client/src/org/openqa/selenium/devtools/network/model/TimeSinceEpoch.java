@@ -1,41 +1,28 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.network.model;
 
-import java.time.Instant;
-import java.util.Objects;
+import org.openqa.selenium.Beta;
+import org.openqa.selenium.json.JsonInput;
 
+/**
+ * UTC time in seconds, counted from January 1, 1970.
+ */
 public class TimeSinceEpoch {
 
-  private Instant timestamp;
+    private final java.lang.Number timeSinceEpoch;
 
-  public static TimeSinceEpoch parse(Number nextNumber) {
-    TimeSinceEpoch monotonicTime = new TimeSinceEpoch();
-    monotonicTime.setTimeStamp(nextNumber);
-    return monotonicTime;
-  }
+    public TimeSinceEpoch(java.lang.Number timeSinceEpoch) {
+        this.timeSinceEpoch = java.util.Objects.requireNonNull(timeSinceEpoch, "Missing value for TimeSinceEpoch");
+    }
 
-  public Instant getTimeStamp() {
-    return timestamp;
-  }
+    private static TimeSinceEpoch fromJson(JsonInput input) {
+        return new TimeSinceEpoch(input.nextNumber());
+    }
 
-  private void setTimeStamp(Number timeStamp) {
-    Objects.requireNonNull(timeStamp,"'timestamp' is require for MonotonicTime");
-    this.timestamp = Instant.ofEpochSecond(timeStamp.longValue());
-  }
+    public String toJson() {
+        return timeSinceEpoch.toString();
+    }
+
+    public String toString() {
+        return timeSinceEpoch.toString();
+    }
 }

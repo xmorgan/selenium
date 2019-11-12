@@ -1,712 +1,516 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.network;
-
-import static java.util.Objects.requireNonNull;
-import static org.openqa.selenium.devtools.ConverterFunctions.map;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.reflect.TypeToken;
 
 import org.openqa.selenium.Beta;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.Event;
-import org.openqa.selenium.devtools.network.model.AuthChallengeResponse;
-import org.openqa.selenium.devtools.network.model.ConnectionType;
-import org.openqa.selenium.devtools.network.model.Cookie;
-import org.openqa.selenium.devtools.network.model.CookieSameSite;
-import org.openqa.selenium.devtools.network.model.DataReceived;
-import org.openqa.selenium.devtools.network.model.ErrorReason;
-import org.openqa.selenium.devtools.network.model.EventSourceMessageReceived;
-import org.openqa.selenium.devtools.network.model.Headers;
-import org.openqa.selenium.devtools.network.model.InterceptionId;
-import org.openqa.selenium.devtools.network.model.LoadingFailed;
-import org.openqa.selenium.devtools.network.model.LoadingFinished;
-import org.openqa.selenium.devtools.network.model.RequestId;
-import org.openqa.selenium.devtools.network.model.RequestIntercepted;
-import org.openqa.selenium.devtools.network.model.RequestPattern;
-import org.openqa.selenium.devtools.network.model.RequestWillBeSent;
-import org.openqa.selenium.devtools.network.model.ResourceChangedPriority;
-import org.openqa.selenium.devtools.network.model.ResponseReceived;
-import org.openqa.selenium.devtools.network.model.SearchMatch;
-import org.openqa.selenium.devtools.network.model.SignedExchangeReceived;
-import org.openqa.selenium.devtools.network.model.TimeSinceEpoch;
-import org.openqa.selenium.devtools.network.model.WebSocketClosed;
-import org.openqa.selenium.devtools.network.model.WebSocketCreated;
-import org.openqa.selenium.devtools.network.model.WebSocketFrame;
-import org.openqa.selenium.devtools.network.model.WebSocketFrameError;
+import org.openqa.selenium.devtools.ConverterFunctions;
+import com.google.common.collect.ImmutableMap;
 import org.openqa.selenium.json.JsonInput;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
 /**
- * All available DevTools Network methods and events
+ * Network domain allows tracking network activities of the page. It exposes information about http,
+ * file, data and other requests and responses, their headers, bodies, timing, etc.
  */
-@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class Network {
 
-  private final static String DOMAIN_NAME = "Network";
-
-  public static Command<Void> clearBrowserCache() {
-    return new Command<>(DOMAIN_NAME + ".clearBrowserCache", ImmutableMap.of());
-  }
-
-  public static Command<Void> clearBrowserCookies() {
-    return new Command<>(DOMAIN_NAME + ".clearBrowserCookies", ImmutableMap.of());
-  }
-
-  /**
-   * Response to Network.requestIntercepted which either modifies the request to continue with any modifications, or blocks it, or completes it with the provided response bytes.
-   * If a network fetch occurs as a result which encounters a redirect an additional Network.requestIntercepted event will be sent with the same InterceptionId.
-   * (EXPERIMENTAL)
-   *
-   * @param interceptionId        Identifier for the intercepted request
-   * @param errorReason           If set this causes the request to fail with the given reason.
-   *                              Passing Aborted for requests marked with isNavigationRequest also cancels the navigation. Must not be set in response to an authChallenge
-   * @param rawResponse           If set the requests completes using with the provided base64 encoded raw response, including HTTP status line and headers etc...
-   *                              Must not be set in response to an authChallenge
-   * @param url                   If set the request url will be modified in a way that's not observable by page. Must not be set in response to an authChallenge
-   * @param method                If set this allows the request method to be overridden. Must not be set in response to an authChallenge
-   * @param postData              If set this allows postData to be set. Must not be set in response to an authChallenge
-   * @param headers               If set this allows the request headers to be changed. Must not be set in response to an authChallenge
-   * @param authChallengeResponse Response to a requestIntercepted with an authChallenge. Must not be set otherwise
-   * @return DevTools Command
-   */
-  @Beta
-  public static Command<Void> continueInterceptedRequest(InterceptionId interceptionId,
-                                                         Optional<ErrorReason> errorReason,
-                                                         Optional<String> rawResponse,
-                                                         Optional<String> url,
-                                                         Optional<String> method,
-                                                         Optional<String> postData,
-                                                         Optional<Map<String, String>> headers,
-                                                         Optional<AuthChallengeResponse> authChallengeResponse) {
-
-    Objects.requireNonNull(interceptionId, "interceptionId must be set.");
-
-    final ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
-
-    params.put("interceptionId", interceptionId.toString());
-    errorReason.ifPresent(reason -> params.put("errorReason", errorReason.get().name()));
-    rawResponse.ifPresent(string -> params.put("rawResponse", rawResponse.toString()));
-    url.ifPresent(string -> params.put("url", url.toString()));
-    method.ifPresent(string -> params.put("method", method.toString()));
-    postData.ifPresent(string -> params.put("postData", postData.toString()));
-    headers.ifPresent(map -> params.put("headers", headers));
-    authChallengeResponse.ifPresent(response -> params.put("authChallengeResponse", authChallengeResponse));
-
-    return new Command<>(DOMAIN_NAME + ".continueInterceptedRequest", params.build());
-
-  }
-
-  /**
-   * Deletes browser cookies with matching name and url or domain/path pair
-   *
-   * @param name   Name of the cookies to remove
-   * @param url    If specified, deletes all the cookies with the given name where domain and path match provided URL
-   * @param domain If specified, deletes only cookies with the exact domain.
-   * @param path   If specified, deletes only cookies with the exact path
-   * @return DevTools Command
-   */
-  public static Command<Void> deleteCookies(String name, Optional<String> url,
-                                            Optional<String> domain, Optional<String> path) {
-
-    Objects.requireNonNull(name, "name must be set.");
-
-    final ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
-
-    params.put("name", name);
-    url.ifPresent(string -> params.put("url", url.toString()));
-    domain.ifPresent(string -> params.put("domain", domain.toString()));
-    path.ifPresent(string -> params.put("path", path.toString()));
-
-    return new Command<>(DOMAIN_NAME + ".deleteCookies", params.build());
-
-  }
-
-  /**
-   * Disables network tracking, prevents network events from being sent to the client.
-   *
-   * @return DevTools Command
-   */
-  public static Command<Void> disable() {
-    return new Command<>(DOMAIN_NAME + ".disable", ImmutableMap.of());
-  }
-
-  /**
-   * Activates emulation of network conditions.
-   *
-   * @param offline            True to emulate internet disconnection.
-   * @param latency            Minimum latency from request sent to response headers received (ms).
-   * @param downloadThroughput Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
-   * @param uploadThroughput   Maximal aggregated upload throughput (bytes/sec). -1 disables upload throttling.
-   * @param connectionType     The underlying connection technology that the browser is supposedly using.
-   * @return DevTools Command
-   */
-  public static Command<Void> emulateNetworkConditions(boolean offline, double latency,
-                                                       double downloadThroughput,
-                                                       double uploadThroughput,
-                                                       Optional<ConnectionType> connectionType) {
-
-    final ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
-
-    params.put("offline", offline);
-    params.put("latency", latency);
-    params.put("downloadThroughput", downloadThroughput);
-    params.put("uploadThroughput", uploadThroughput);
-
-    connectionType
-        .ifPresent(ConnectionType -> params.put("connectionType", connectionType.get()));
-
-    return new Command<>(DOMAIN_NAME + ".emulateNetworkConditions", params.build());
-
-  }
-
-  /**
-   * Enables network tracking, network events will now be delivered to the client.
-   *
-   * @param maxTotalBufferSize    Buffer size in bytes to use when preserving network payloads (XHRs, etc).
-   * @param maxResourceBufferSize Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
-   * @param maxPostDataSize       Longest post body size (in bytes) that would be included in requestWillBeSent notification
-   * @return DevTools Command
-   */
-  public static Command<Void> enable(Optional<Integer> maxTotalBufferSize,
-                                     Optional<Integer> maxResourceBufferSize,
-                                     Optional<Integer> maxPostDataSize) {
-
-    final ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
-
-    maxTotalBufferSize.ifPresent(integer -> params.put("maxTotalBufferSize", integer));
-    maxResourceBufferSize.ifPresent(integer -> params.put("maxResourceBufferSize", integer));
-    maxPostDataSize.ifPresent(integer -> params.put("maxPostDataSize", integer));
-
-    return new Command<>(DOMAIN_NAME + ".enable", params.build());
-
-  }
-
-  /**
-   * Returns all browser cookies. Depending on the backend support, will return detailed cookie information in the cookies field
-   *
-   * @return Array of Cookies with a "asSeleniumCookies" method
-   */
-  public static Command<List<Cookie>> getAllCookies() {
-    return new Command<>(
-      DOMAIN_NAME + ".getAllCookies",
-      ImmutableMap.of(),
-      map("cookies", new TypeToken<List<Cookie>>() {}.getType()));
-  }
-
-  /**
-   * Returns the DER-encoded certificate (EXPERIMENTAL)
-   *
-   * @param origin Origin to get certificate for
-   * @return List of tableNames
-   */
-  @Beta
-  public static Command<List<String>> getCertificate(String origin) {
-    Objects.requireNonNull(origin, "origin must be set.");
-    return new Command<>(DOMAIN_NAME + ".getCertificate", ImmutableMap.of("origin", origin),
-                         map("tableNames", new TypeToken<List<String>>() {}.getType()));
-  }
-
-  /**
-   * Returns all browser cookies for the current URL. Depending on the backend support, will return detailed cookie information in the cookies field
-   *
-   * @param urls The list of URLs for which applicable cookies will be fetched
-   * @return Array of cookies
-   */
-  public static Command<List<Cookie>> getCookies(Optional<List<String>> urls) {
-
-    final ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
-
-    urls.ifPresent(list -> params.put("urls", urls));
-
-    return new Command<>(DOMAIN_NAME + ".getCookies", params.build(),
-                         map("cookies", new TypeToken<List<Cookie>>() {}.getType()));
-
-  }
-
-  public static class GetResponseBodyResponse {
-
     /**
-     * Response body
+     * Tells whether clearing browser cache is supported.
      */
-    private final String body;
-
-    /**
-     * True, if content was sent as base64
-     */
-    private final Boolean base64Encoded;
-
-    private GetResponseBodyResponse(String body, Boolean base64Encoded) {
-      this.body = requireNonNull(body, "'body' is required for GetResponseBodyResponse");
-      this.base64Encoded = requireNonNull(base64Encoded, "'base64Encoded' is required for GetResponseBodyResponse");
+    @Deprecated()
+    public static Command<java.lang.Boolean> canClearBrowserCache() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Network.canClearBrowserCache", params.build(), ConverterFunctions.map("result", java.lang.Boolean.class));
     }
 
-    private static GetResponseBodyResponse fromJson(JsonInput input) {
-      String body = input.nextString();
-      Boolean base64Encoded = null;
+    /**
+     * Tells whether clearing browser cookies is supported.
+     */
+    @Deprecated()
+    public static Command<java.lang.Boolean> canClearBrowserCookies() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Network.canClearBrowserCookies", params.build(), ConverterFunctions.map("result", java.lang.Boolean.class));
+    }
 
-      while (input.hasNext()) {
+    /**
+     * Tells whether emulation of network conditions is supported.
+     */
+    @Deprecated()
+    public static Command<java.lang.Boolean> canEmulateNetworkConditions() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Network.canEmulateNetworkConditions", params.build(), ConverterFunctions.map("result", java.lang.Boolean.class));
+    }
 
-        switch (input.nextName()) {
-          case "base64Encoded":
-            base64Encoded = input.nextBoolean();
-            break;
+    /**
+     * Clears browser cache.
+     */
+    public static Command<Void> clearBrowserCache() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Network.clearBrowserCache", params.build());
+    }
 
-          default:
-            input.skipValue();
-            break;
+    /**
+     * Clears browser cookies.
+     */
+    public static Command<Void> clearBrowserCookies() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Network.clearBrowserCookies", params.build());
+    }
+
+    /**
+     * Response to Network.requestIntercepted which either modifies the request to continue with any
+     * modifications, or blocks it, or completes it with the provided response bytes. If a network
+     * fetch occurs as a result which encounters a redirect an additional Network.requestIntercepted
+     * event will be sent with the same InterceptionId.
+     * Deprecated, use Fetch.continueRequest, Fetch.fulfillRequest and Fetch.failRequest instead.
+     */
+    @Beta()
+    @Deprecated()
+    public static Command<Void> continueInterceptedRequest(org.openqa.selenium.devtools.network.model.InterceptionId interceptionId, java.util.Optional<org.openqa.selenium.devtools.network.model.ErrorReason> errorReason, java.util.Optional<java.lang.String> rawResponse, java.util.Optional<java.lang.String> url, java.util.Optional<java.lang.String> method, java.util.Optional<java.lang.String> postData, java.util.Optional<org.openqa.selenium.devtools.network.model.Headers> headers, java.util.Optional<org.openqa.selenium.devtools.network.model.AuthChallengeResponse> authChallengeResponse) {
+        java.util.Objects.requireNonNull(interceptionId, "interceptionId is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("interceptionId", interceptionId);
+        errorReason.ifPresent(p -> params.put("errorReason", p));
+        rawResponse.ifPresent(p -> params.put("rawResponse", p));
+        url.ifPresent(p -> params.put("url", p));
+        method.ifPresent(p -> params.put("method", p));
+        postData.ifPresent(p -> params.put("postData", p));
+        headers.ifPresent(p -> params.put("headers", p));
+        authChallengeResponse.ifPresent(p -> params.put("authChallengeResponse", p));
+        return new Command<>("Network.continueInterceptedRequest", params.build());
+    }
+
+    /**
+     * Deletes browser cookies with matching name and url or domain/path pair.
+     */
+    public static Command<Void> deleteCookies(java.lang.String name, java.util.Optional<java.lang.String> url, java.util.Optional<java.lang.String> domain, java.util.Optional<java.lang.String> path) {
+        java.util.Objects.requireNonNull(name, "name is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("name", name);
+        url.ifPresent(p -> params.put("url", p));
+        domain.ifPresent(p -> params.put("domain", p));
+        path.ifPresent(p -> params.put("path", p));
+        return new Command<>("Network.deleteCookies", params.build());
+    }
+
+    /**
+     * Disables network tracking, prevents network events from being sent to the client.
+     */
+    public static Command<Void> disable() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Network.disable", params.build());
+    }
+
+    /**
+     * Activates emulation of network conditions.
+     */
+    public static Command<Void> emulateNetworkConditions(java.lang.Boolean offline, java.lang.Number latency, java.lang.Number downloadThroughput, java.lang.Number uploadThroughput, java.util.Optional<org.openqa.selenium.devtools.network.model.ConnectionType> connectionType) {
+        java.util.Objects.requireNonNull(offline, "offline is required");
+        java.util.Objects.requireNonNull(latency, "latency is required");
+        java.util.Objects.requireNonNull(downloadThroughput, "downloadThroughput is required");
+        java.util.Objects.requireNonNull(uploadThroughput, "uploadThroughput is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("offline", offline);
+        params.put("latency", latency);
+        params.put("downloadThroughput", downloadThroughput);
+        params.put("uploadThroughput", uploadThroughput);
+        connectionType.ifPresent(p -> params.put("connectionType", p));
+        return new Command<>("Network.emulateNetworkConditions", params.build());
+    }
+
+    /**
+     * Enables network tracking, network events will now be delivered to the client.
+     */
+    public static Command<Void> enable(java.util.Optional<java.lang.Integer> maxTotalBufferSize, java.util.Optional<java.lang.Integer> maxResourceBufferSize, java.util.Optional<java.lang.Integer> maxPostDataSize) {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        maxTotalBufferSize.ifPresent(p -> params.put("maxTotalBufferSize", p));
+        maxResourceBufferSize.ifPresent(p -> params.put("maxResourceBufferSize", p));
+        maxPostDataSize.ifPresent(p -> params.put("maxPostDataSize", p));
+        return new Command<>("Network.enable", params.build());
+    }
+
+    /**
+     * Returns all browser cookies. Depending on the backend support, will return detailed cookie
+     * information in the `cookies` field.
+     */
+    public static Command<java.util.List<org.openqa.selenium.devtools.network.model.Cookie>> getAllCookies() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Network.getAllCookies", params.build(), ConverterFunctions.map("cookies", new com.google.common.reflect.TypeToken<java.util.List<org.openqa.selenium.devtools.network.model.Cookie>>() {
+        }.getType()));
+    }
+
+    /**
+     * Returns the DER-encoded certificate.
+     */
+    @Beta()
+    public static Command<java.util.List<java.lang.String>> getCertificate(java.lang.String origin) {
+        java.util.Objects.requireNonNull(origin, "origin is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("origin", origin);
+        return new Command<>("Network.getCertificate", params.build(), ConverterFunctions.map("tableNames", new com.google.common.reflect.TypeToken<java.util.List<java.lang.String>>() {
+        }.getType()));
+    }
+
+    /**
+     * Returns all browser cookies for the current URL. Depending on the backend support, will return
+     * detailed cookie information in the `cookies` field.
+     */
+    public static Command<java.util.List<org.openqa.selenium.devtools.network.model.Cookie>> getCookies(java.util.Optional<java.util.List<java.lang.String>> urls) {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        urls.ifPresent(p -> params.put("urls", p));
+        return new Command<>("Network.getCookies", params.build(), ConverterFunctions.map("cookies", new com.google.common.reflect.TypeToken<java.util.List<org.openqa.selenium.devtools.network.model.Cookie>>() {
+        }.getType()));
+    }
+
+    public static class GetResponseBodyResponse {
+
+        private final java.lang.String body;
+
+        private final java.lang.Boolean base64Encoded;
+
+        public GetResponseBodyResponse(java.lang.String body, java.lang.Boolean base64Encoded) {
+            this.body = java.util.Objects.requireNonNull(body, "body is required");
+            this.base64Encoded = java.util.Objects.requireNonNull(base64Encoded, "base64Encoded is required");
         }
-      }
 
-      return new GetResponseBodyResponse(body, base64Encoded);
-    }
-
-    public String getBody() {
-      return body;
-    }
-
-    public Boolean getBase64Encoded() {
-      return base64Encoded;
-    }
-
-    @Override
-    public String toString() {
-      return "GetResponseBodyResponse{" +
-             "body='" + body + '\'' +
-             ", base64Encoded=" + base64Encoded +
-             '}';
-    }
-
-  }
-
-  /**
-   * Returns content served for the given request
-   *
-   * @param requestId Identifier of the network request to get content for
-   * @return ResponseBody object
-   */
-  public static Command<GetResponseBodyResponse> getResponseBody(RequestId requestId) {
-    Objects.requireNonNull(requestId, "requestId must be set.");
-    return new Command<>(DOMAIN_NAME + ".getResponseBody",
-                         ImmutableMap.of("requestId", requestId.toString()),
-                         map("body", GetResponseBodyResponse.class));
-  }
-
-  /**
-   * Returns post data sent with the request. Returns an error when no data was sent with the request.
-   *
-   * @param requestId Identifier of the network request to get content for.
-   * @return DevTools Command with Request body string, omitting files from multipart requests
-   */
-  public static Command<String> getRequestPostData(RequestId requestId) {
-    Objects.requireNonNull(requestId, "requestId must be set.");
-    return new Command<>(DOMAIN_NAME + ".getRequestPostData",
-                         ImmutableMap.of("requestId", requestId.toString()),
-                         map("postData", String.class));
-  }
-
-  public static class GetResponseBodyForInterceptionResponse {
-
-    /**
-     * Response body
-     */
-    private final String body;
-
-    /**
-     * True, if content was sent as base64
-     */
-    private final Boolean base64Encoded;
-
-    private GetResponseBodyForInterceptionResponse(String body, Boolean base64Encoded) {
-      this.body = requireNonNull(body, "'body' is required for GetResponseBodyForInterceptionResponse");
-      this.base64Encoded = requireNonNull(base64Encoded, "'base64Encoded' is required for GetResponseBodyForInterceptionResponse");
-    }
-
-    private static GetResponseBodyForInterceptionResponse fromJson(JsonInput input) {
-      String body = input.nextString();
-      Boolean base64Encoded = null;
-
-      while (input.hasNext()) {
-
-        switch (input.nextName()) {
-          case "base64Encoded":
-            base64Encoded = input.nextBoolean();
-            break;
-
-          default:
-            input.skipValue();
-            break;
+        /**
+         * Response body.
+         */
+        public java.lang.String getBody() {
+            return body;
         }
-      }
 
-      return new GetResponseBodyForInterceptionResponse(body, base64Encoded);
+        /**
+         * True, if content was sent as base64.
+         */
+        public java.lang.Boolean getBase64Encoded() {
+            return base64Encoded;
+        }
+
+        private static GetResponseBodyResponse fromJson(JsonInput input) {
+            java.lang.String body = null;
+            java.lang.Boolean base64Encoded = null;
+            input.beginObject();
+            while (input.hasNext()) {
+                switch(input.nextName()) {
+                    case "body":
+                        body = input.nextString();
+                        break;
+                    case "base64Encoded":
+                        base64Encoded = input.nextBoolean();
+                        break;
+                    default:
+                        input.skipValue();
+                        break;
+                }
+            }
+            input.endObject();
+            return new GetResponseBodyResponse(body, base64Encoded);
+        }
     }
 
-    public String getBody() {
-      return body;
+    /**
+     * Returns content served for the given request.
+     */
+    public static Command<org.openqa.selenium.devtools.network.Network.GetResponseBodyResponse> getResponseBody(org.openqa.selenium.devtools.network.model.RequestId requestId) {
+        java.util.Objects.requireNonNull(requestId, "requestId is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("requestId", requestId);
+        return new Command<>("Network.getResponseBody", params.build(), input -> input.read(org.openqa.selenium.devtools.network.Network.GetResponseBodyResponse.class));
     }
 
-    public Boolean getBase64Encoded() {
-      return base64Encoded;
+    /**
+     * Returns post data sent with the request. Returns an error when no data was sent with the request.
+     */
+    public static Command<java.lang.String> getRequestPostData(org.openqa.selenium.devtools.network.model.RequestId requestId) {
+        java.util.Objects.requireNonNull(requestId, "requestId is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("requestId", requestId);
+        return new Command<>("Network.getRequestPostData", params.build(), ConverterFunctions.map("postData", java.lang.String.class));
     }
 
-    @Override
-    public String toString() {
-      return "GetResponseBodyForInterceptionResponse{" +
-             "body='" + body + '\'' +
-             ", base64Encoded=" + base64Encoded +
-             '}';
+    public static class GetResponseBodyForInterceptionResponse {
+
+        private final java.lang.String body;
+
+        private final java.lang.Boolean base64Encoded;
+
+        public GetResponseBodyForInterceptionResponse(java.lang.String body, java.lang.Boolean base64Encoded) {
+            this.body = java.util.Objects.requireNonNull(body, "body is required");
+            this.base64Encoded = java.util.Objects.requireNonNull(base64Encoded, "base64Encoded is required");
+        }
+
+        /**
+         * Response body.
+         */
+        public java.lang.String getBody() {
+            return body;
+        }
+
+        /**
+         * True, if content was sent as base64.
+         */
+        public java.lang.Boolean getBase64Encoded() {
+            return base64Encoded;
+        }
+
+        private static GetResponseBodyForInterceptionResponse fromJson(JsonInput input) {
+            java.lang.String body = null;
+            java.lang.Boolean base64Encoded = null;
+            input.beginObject();
+            while (input.hasNext()) {
+                switch(input.nextName()) {
+                    case "body":
+                        body = input.nextString();
+                        break;
+                    case "base64Encoded":
+                        base64Encoded = input.nextBoolean();
+                        break;
+                    default:
+                        input.skipValue();
+                        break;
+                }
+            }
+            input.endObject();
+            return new GetResponseBodyForInterceptionResponse(body, base64Encoded);
+        }
     }
 
-  }
+    /**
+     * Returns content served for the given currently intercepted request.
+     */
+    @Beta()
+    public static Command<org.openqa.selenium.devtools.network.Network.GetResponseBodyForInterceptionResponse> getResponseBodyForInterception(org.openqa.selenium.devtools.network.model.InterceptionId interceptionId) {
+        java.util.Objects.requireNonNull(interceptionId, "interceptionId is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("interceptionId", interceptionId);
+        return new Command<>("Network.getResponseBodyForInterception", params.build(), input -> input.read(org.openqa.selenium.devtools.network.Network.GetResponseBodyForInterceptionResponse.class));
+    }
 
-  /**
-   * Returns content served for the given currently intercepted request (EXPERIMENTAL)
-   *
-   * @param interceptionId Identifier for the intercepted request to get body for
-   * @return ResponseBody object
-   */
-  @Beta
-  public static Command<GetResponseBodyForInterceptionResponse> getResponseBodyForInterception(
-      InterceptionId interceptionId) {
-    Objects.requireNonNull(interceptionId.toString(), "interceptionId must be set.");
-    return new Command<>(DOMAIN_NAME + ".getResponseBodyForInterception",
-                         ImmutableMap.of("interceptionId", interceptionId),
-                         map("body", GetResponseBodyForInterceptionResponse.class));
-  }
+    /**
+     * Returns a handle to the stream representing the response body. Note that after this command,
+     * the intercepted request can't be continued as is -- you either need to cancel it or to provide
+     * the response body. The stream only supports sequential read, IO.read will fail if the position
+     * is specified.
+     */
+    @Beta()
+    public static Command<org.openqa.selenium.devtools.io.model.StreamHandle> takeResponseBodyForInterceptionAsStream(org.openqa.selenium.devtools.network.model.InterceptionId interceptionId) {
+        java.util.Objects.requireNonNull(interceptionId, "interceptionId is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("interceptionId", interceptionId);
+        return new Command<>("Network.takeResponseBodyForInterceptionAsStream", params.build(), ConverterFunctions.map("stream", org.openqa.selenium.devtools.io.model.StreamHandle.class));
+    }
 
-  /**
-   * Returns a handle to the stream representing the response body. Note that after this command, the intercepted request can't be continued as is -- you either need to cancel it or to provide the response body.
-   * The stream only supports sequential read, IO.read will fail if the position is specified (EXPERIMENTAL)
-   *
-   * @param interceptionId Identifier for the intercepted request to get body for
-   * @return HTTP response body Stream as a String
-   */
-  @Beta
-  public static Command<String> takeResponseBodyForInterceptionAsStream(
-      InterceptionId interceptionId) {
-    Objects.requireNonNull(interceptionId, "interceptionId must be set.");
-    return new Command<>(DOMAIN_NAME + ".takeResponseBodyForInterceptionAsStream",
-                         ImmutableMap.of("interceptionId", interceptionId),
-                         map("stream", String.class));
-  }
+    /**
+     * This method sends a new XMLHttpRequest which is identical to the original one. The following
+     * parameters should be identical: method, url, async, request body, extra headers, withCredentials
+     * attribute, user, password.
+     */
+    @Beta()
+    public static Command<Void> replayXHR(org.openqa.selenium.devtools.network.model.RequestId requestId) {
+        java.util.Objects.requireNonNull(requestId, "requestId is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("requestId", requestId);
+        return new Command<>("Network.replayXHR", params.build());
+    }
 
-  /**
-   * @param requestId Identifier of XHR to replay
-   * @return - DevTools Command
-   */
-  public static Command<Void> replayXHR(RequestId requestId) {
+    /**
+     * Searches for given string in response content.
+     */
+    @Beta()
+    public static Command<java.util.List<org.openqa.selenium.devtools.debugger.model.SearchMatch>> searchInResponseBody(org.openqa.selenium.devtools.network.model.RequestId requestId, java.lang.String query, java.util.Optional<java.lang.Boolean> caseSensitive, java.util.Optional<java.lang.Boolean> isRegex) {
+        java.util.Objects.requireNonNull(requestId, "requestId is required");
+        java.util.Objects.requireNonNull(query, "query is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("requestId", requestId);
+        params.put("query", query);
+        caseSensitive.ifPresent(p -> params.put("caseSensitive", p));
+        isRegex.ifPresent(p -> params.put("isRegex", p));
+        return new Command<>("Network.searchInResponseBody", params.build(), ConverterFunctions.map("result", new com.google.common.reflect.TypeToken<java.util.List<org.openqa.selenium.devtools.debugger.model.SearchMatch>>() {
+        }.getType()));
+    }
 
-    Objects.requireNonNull(requestId, "requestId must be set.");
-    return new Command<>(DOMAIN_NAME + ".replayXHR", ImmutableMap.of("requestId", requestId.toString()));
+    /**
+     * Blocks URLs from loading.
+     */
+    @Beta()
+    public static Command<Void> setBlockedURLs(java.util.List<java.lang.String> urls) {
+        java.util.Objects.requireNonNull(urls, "urls is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("urls", urls);
+        return new Command<>("Network.setBlockedURLs", params.build());
+    }
 
-  }
+    /**
+     * Toggles ignoring of service worker for each request.
+     */
+    @Beta()
+    public static Command<Void> setBypassServiceWorker(java.lang.Boolean bypass) {
+        java.util.Objects.requireNonNull(bypass, "bypass is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("bypass", bypass);
+        return new Command<>("Network.setBypassServiceWorker", params.build());
+    }
 
-  /**
-   * Searches for given string in response content (EXPERIMENTAL)
-   *
-   * @param requestId     Identifier of the network response to search
-   * @param query         String to search for.
-   * @param caseSensitive If true, search is case sensitive
-   * @param isRegex       If true, treats string parameter as regex
-   * @return List of SearchMatch
-   */
-  @Beta
-  public static Command<List<SearchMatch>> searchInResponseBody(RequestId requestId, String query,
-                                                                Optional<Boolean> caseSensitive,
-                                                                Optional<Boolean> isRegex) {
+    /**
+     * Toggles ignoring cache for each request. If `true`, cache will not be used.
+     */
+    public static Command<Void> setCacheDisabled(java.lang.Boolean cacheDisabled) {
+        java.util.Objects.requireNonNull(cacheDisabled, "cacheDisabled is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("cacheDisabled", cacheDisabled);
+        return new Command<>("Network.setCacheDisabled", params.build());
+    }
 
-    Objects.requireNonNull(requestId, "requestId must be set.");
-    Objects.requireNonNull(query, "query must be set.");
+    /**
+     * Sets a cookie with the given cookie data; may overwrite equivalent cookies if they exist.
+     */
+    public static Command<java.lang.Boolean> setCookie(java.lang.String name, java.lang.String value, java.util.Optional<java.lang.String> url, java.util.Optional<java.lang.String> domain, java.util.Optional<java.lang.String> path, java.util.Optional<java.lang.Boolean> secure, java.util.Optional<java.lang.Boolean> httpOnly, java.util.Optional<org.openqa.selenium.devtools.network.model.CookieSameSite> sameSite, java.util.Optional<org.openqa.selenium.devtools.network.model.TimeSinceEpoch> expires) {
+        java.util.Objects.requireNonNull(name, "name is required");
+        java.util.Objects.requireNonNull(value, "value is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("name", name);
+        params.put("value", value);
+        url.ifPresent(p -> params.put("url", p));
+        domain.ifPresent(p -> params.put("domain", p));
+        path.ifPresent(p -> params.put("path", p));
+        secure.ifPresent(p -> params.put("secure", p));
+        httpOnly.ifPresent(p -> params.put("httpOnly", p));
+        sameSite.ifPresent(p -> params.put("sameSite", p));
+        expires.ifPresent(p -> params.put("expires", p));
+        return new Command<>("Network.setCookie", params.build(), ConverterFunctions.map("success", java.lang.Boolean.class));
+    }
 
-    final ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+    /**
+     * Sets given cookies.
+     */
+    public static Command<Void> setCookies(java.util.List<org.openqa.selenium.devtools.network.model.CookieParam> cookies) {
+        java.util.Objects.requireNonNull(cookies, "cookies is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("cookies", cookies);
+        return new Command<>("Network.setCookies", params.build());
+    }
 
-    params.put("requestId", requestId.toString());
-    params.put("query", query);
-    caseSensitive.ifPresent(bool -> params.put("caseSensitive", caseSensitive));
-    isRegex.ifPresent(bool -> params.put("isRegex", isRegex));
+    /**
+     * For testing.
+     */
+    @Beta()
+    public static Command<Void> setDataSizeLimitsForTest(java.lang.Integer maxTotalSize, java.lang.Integer maxResourceSize) {
+        java.util.Objects.requireNonNull(maxTotalSize, "maxTotalSize is required");
+        java.util.Objects.requireNonNull(maxResourceSize, "maxResourceSize is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("maxTotalSize", maxTotalSize);
+        params.put("maxResourceSize", maxResourceSize);
+        return new Command<>("Network.setDataSizeLimitsForTest", params.build());
+    }
 
-    return new Command<>(DOMAIN_NAME + ".searchInResponseBody", params.build(),
-                         map("result", new TypeToken<List<SearchMatch>>() {
-                         }.getType()));
-  }
+    /**
+     * Specifies whether to always send extra HTTP headers with the requests from this page.
+     */
+    public static Command<Void> setExtraHTTPHeaders(org.openqa.selenium.devtools.network.model.Headers headers) {
+        java.util.Objects.requireNonNull(headers, "headers is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("headers", headers);
+        return new Command<>("Network.setExtraHTTPHeaders", params.build());
+    }
 
-  /**
-   * Blocks URLs from loading (EXPERIMENTAL)
-   *
-   * @param urls URL patterns to block. Wildcards ('*') are allowed.
-   * @return DevTools Command
-   */
-  @Beta
-  public static Command<Void> setBlockedURLs(List<String> urls) {
-    Objects.requireNonNull(urls, "urls must be set.");
-    return new Command<>(DOMAIN_NAME + ".setBlockedURLs", ImmutableMap.of("urls", urls));
-  }
+    /**
+     * Sets the requests to intercept that match the provided patterns and optionally resource types.
+     * Deprecated, please use Fetch.enable instead.
+     */
+    @Beta()
+    @Deprecated()
+    public static Command<Void> setRequestInterception(java.util.List<org.openqa.selenium.devtools.network.model.RequestPattern> patterns) {
+        java.util.Objects.requireNonNull(patterns, "patterns is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("patterns", patterns);
+        return new Command<>("Network.setRequestInterception", params.build());
+    }
 
-  /**
-   * Toggles ignoring of service worker for each request. (EXPERIMENTAL)
-   *
-   * @param bypass Bypass service worker and load from network
-   * @return - DevTools Command
-   */
-  @Beta
-  public static Command<Void> setBypassServiceWorker(boolean bypass) {
-    return new Command<>(DOMAIN_NAME + ".setBypassServiceWorker",
-                         ImmutableMap.of("bypass", bypass));
-  }
+    /**
+     * Allows overriding user agent with the given string.
+     */
+    public static Command<Void> setUserAgentOverride(java.lang.String userAgent, java.util.Optional<java.lang.String> acceptLanguage, java.util.Optional<java.lang.String> platform) {
+        java.util.Objects.requireNonNull(userAgent, "userAgent is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("userAgent", userAgent);
+        acceptLanguage.ifPresent(p -> params.put("acceptLanguage", p));
+        platform.ifPresent(p -> params.put("platform", p));
+        return new Command<>("Network.setUserAgentOverride", params.build());
+    }
 
-  /**
-   * Toggles ignoring cache for each request. If true, cache will not be used.
-   *
-   * @param cacheDisabled Cache disabled state.
-   * @return DevTools Command
-   */
-  public static Command<Void> setCacheDisabled(boolean cacheDisabled) {
-    return new Command<>(DOMAIN_NAME + ".setCacheDisabled",
-                         ImmutableMap.of("cacheDisabled", cacheDisabled));
-  }
+    public static Event<org.openqa.selenium.devtools.network.model.DataReceived> dataReceived() {
+        return new Event<>("Network.dataReceived", input -> input.read(org.openqa.selenium.devtools.network.model.DataReceived.class));
+    }
 
-  /**
-   * Sets a cookie with the given cookie data; may overwrite equivalent cookies if they exist
-   *
-   * @param url    The request-URI to associate with the setting of the cookie. This value can affect the default domain and path values of the created cookie
-   * @return Boolean
-   */
-  public static Command<Boolean> setCookie(
-      String name, String value, Optional<String> url, Optional<String> domain,
-      Optional<String> path, Optional<Boolean> secure, Optional<Boolean> httpOnly,
-      Optional<CookieSameSite> sameSite, Optional<TimeSinceEpoch> expires) {
-    Objects.requireNonNull(name, "name must be set.");
-    Objects.requireNonNull(value, "value must be set.");
+    public static Event<org.openqa.selenium.devtools.network.model.EventSourceMessageReceived> eventSourceMessageReceived() {
+        return new Event<>("Network.eventSourceMessageReceived", input -> input.read(org.openqa.selenium.devtools.network.model.EventSourceMessageReceived.class));
+    }
 
-    final ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+    public static Event<org.openqa.selenium.devtools.network.model.LoadingFailed> loadingFailed() {
+        return new Event<>("Network.loadingFailed", input -> input.read(org.openqa.selenium.devtools.network.model.LoadingFailed.class));
+    }
 
-    params.put("name", name);
-    params.put("value", value);
-    url.ifPresent(s -> params.put("url", s));
-    domain.ifPresent(s -> params.put("domain", s));
-    path.ifPresent(s -> params.put("path", s));
-    secure.ifPresent(b -> params.put("secure", b));
-    httpOnly.ifPresent(b -> params.put("httpOnly", b));
-    sameSite.ifPresent(e -> params.put("sameSite", e));
-    expires.ifPresent(o -> params.put("expires", o));
+    public static Event<org.openqa.selenium.devtools.network.model.LoadingFinished> loadingFinished() {
+        return new Event<>("Network.loadingFinished", input -> input.read(org.openqa.selenium.devtools.network.model.LoadingFinished.class));
+    }
 
-    return new Command<>(DOMAIN_NAME + ".setCookie", params.build(), map("success", Boolean.class));
-  }
+    public static Event<org.openqa.selenium.devtools.network.model.RequestIntercepted> requestIntercepted() {
+        return new Event<>("Network.requestIntercepted", input -> input.read(org.openqa.selenium.devtools.network.model.RequestIntercepted.class));
+    }
 
-  /**
-   * (EXPERIMENTAL)
-   *
-   * @param maxTotalSize    Maximum total buffer size
-   * @param maxResourceSize Maximum per-resource size
-   * @return DevTools Command
-   */
-  @Beta
-  public static Command<Void> setDataSizeLimitsForTest(int maxTotalSize, int maxResourceSize) {
-    return new Command<>(DOMAIN_NAME + ".setDataSizeLimitsForTest", ImmutableMap
-        .of("maxTotalSize", maxTotalSize, "maxResourceSize", maxResourceSize));
-  }
+    public static Event<org.openqa.selenium.devtools.network.model.RequestId> requestServedFromCache() {
+        return new Event<>("Network.requestServedFromCache", ConverterFunctions.map("requestId", org.openqa.selenium.devtools.network.model.RequestId.class));
+    }
 
-  /**
-   * Specifies whether to always send extra HTTP headers with the requests from this page.
-   *
-   * @param headers Map with extra HTTP headers.
-   * @return DevTools Command
-   */
-  public static Command<Void> setExtraHTTPHeaders(Headers headers) {
-    Objects.requireNonNull(headers, "headers must be set.");
-    return new Command<>(DOMAIN_NAME + ".setExtraHTTPHeaders", ImmutableMap.of("headers", headers));
-  }
+    public static Event<org.openqa.selenium.devtools.network.model.RequestWillBeSent> requestWillBeSent() {
+        return new Event<>("Network.requestWillBeSent", input -> input.read(org.openqa.selenium.devtools.network.model.RequestWillBeSent.class));
+    }
 
-  /**
-   * Sets the requests to intercept that match the provided patterns and optionally resource types (EXPERIMENTAL)
-   *
-   * @param patterns Requests matching any of these patterns will be forwarded and wait for the corresponding continueInterceptedRequest call.
-   * @return DevTools Command
-   */
-  @Beta
-  public static Command<Void> setRequestInterception(List<RequestPattern> patterns) {
-    Objects.requireNonNull(patterns, "patterns must be set.");
-    return new Command<>(DOMAIN_NAME + ".setRequestInterception",
-                         ImmutableMap.of("patterns", patterns));
-  }
+    public static Event<org.openqa.selenium.devtools.network.model.ResourceChangedPriority> resourceChangedPriority() {
+        return new Event<>("Network.resourceChangedPriority", input -> input.read(org.openqa.selenium.devtools.network.model.ResourceChangedPriority.class));
+    }
 
-  /**
-   * Allows overriding user agent with the given string
-   *
-   * @param userAgent      User agent to use
-   * @param acceptLanguage Browser langugage to emulate
-   * @param platform       The platform navigator.platform should return
-   * @return DevTools Command
-   */
-  public static Command<Void> setUserAgentOverride(String userAgent,
-                                                   Optional<String> acceptLanguage,
-                                                   Optional<String> platform) {
+    public static Event<org.openqa.selenium.devtools.network.model.SignedExchangeReceived> signedExchangeReceived() {
+        return new Event<>("Network.signedExchangeReceived", input -> input.read(org.openqa.selenium.devtools.network.model.SignedExchangeReceived.class));
+    }
 
-    Objects.requireNonNull(userAgent, "userAgent must be set.");
-    final ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+    public static Event<org.openqa.selenium.devtools.network.model.ResponseReceived> responseReceived() {
+        return new Event<>("Network.responseReceived", input -> input.read(org.openqa.selenium.devtools.network.model.ResponseReceived.class));
+    }
 
-    params.put("userAgent", userAgent);
-    acceptLanguage.ifPresent(string -> params.put("acceptLanguage", acceptLanguage.toString()));
-    platform.ifPresent(string -> params.put("platform", platform.toString()));
+    public static Event<org.openqa.selenium.devtools.network.model.WebSocketClosed> webSocketClosed() {
+        return new Event<>("Network.webSocketClosed", input -> input.read(org.openqa.selenium.devtools.network.model.WebSocketClosed.class));
+    }
 
-    return new Command<>(DOMAIN_NAME + ".setUserAgentOverride", params.build());
-  }
+    public static Event<org.openqa.selenium.devtools.network.model.WebSocketCreated> webSocketCreated() {
+        return new Event<>("Network.webSocketCreated", input -> input.read(org.openqa.selenium.devtools.network.model.WebSocketCreated.class));
+    }
 
-  /**
-   * Fired when data chunk was received over the network.
-   *
-   * @return DataReceived Event
-   */
-  public static Event<DataReceived> dataReceived() {
-    return new Event<>(DOMAIN_NAME + ".dataReceived", map("requestId", DataReceived.class));
-  }
+    public static Event<org.openqa.selenium.devtools.network.model.WebSocketFrameError> webSocketFrameError() {
+        return new Event<>("Network.webSocketFrameError", input -> input.read(org.openqa.selenium.devtools.network.model.WebSocketFrameError.class));
+    }
 
-  /**
-   * Fired when EventSource message is received
-   *
-   * @return EventSourceMessageReceived Event
-   */
-  public static Event<EventSourceMessageReceived> eventSourceMessageReceived() {
-    return new Event<>(DOMAIN_NAME + ".eventSourceMessageReceived",
-                       map("requestId", EventSourceMessageReceived.class));
-  }
+    public static Event<org.openqa.selenium.devtools.network.model.WebSocketFrameReceived> webSocketFrameReceived() {
+        return new Event<>("Network.webSocketFrameReceived", input -> input.read(org.openqa.selenium.devtools.network.model.WebSocketFrameReceived.class));
+    }
 
-  /**
-   * Fired when HTTP request has failed to load
-   *
-   * @return LoadingFailed object
-   */
-  public static Event<LoadingFailed> loadingFailed() {
-    return new Event<>(DOMAIN_NAME + ".loadingFailed", map("requestId", LoadingFailed.class));
-  }
+    public static Event<org.openqa.selenium.devtools.network.model.WebSocketFrameSent> webSocketFrameSent() {
+        return new Event<>("Network.webSocketFrameSent", input -> input.read(org.openqa.selenium.devtools.network.model.WebSocketFrameSent.class));
+    }
 
-  /**
-   * Fired when HTTP request has finished loading
-   *
-   * @return LoadingFinished object
-   */
-  public static Event<LoadingFinished> loadingFinished() {
-    return new Event<>(DOMAIN_NAME + ".loadingFinished", map("requestId", LoadingFinished.class));
-  }
+    public static Event<org.openqa.selenium.devtools.network.model.WebSocketHandshakeResponseReceived> webSocketHandshakeResponseReceived() {
+        return new Event<>("Network.webSocketHandshakeResponseReceived", input -> input.read(org.openqa.selenium.devtools.network.model.WebSocketHandshakeResponseReceived.class));
+    }
 
-  /**
-   * Fired if request ended up loading from cache
-   *
-   * @return RequestId object
-   */
-  public static Event<RequestId> requestServedFromCache() {
-    return new Event<>(DOMAIN_NAME + ".requestServedFromCache", map("requestId", RequestId.class));
-  }
+    public static Event<org.openqa.selenium.devtools.network.model.WebSocketWillSendHandshakeRequest> webSocketWillSendHandshakeRequest() {
+        return new Event<>("Network.webSocketWillSendHandshakeRequest", input -> input.read(org.openqa.selenium.devtools.network.model.WebSocketWillSendHandshakeRequest.class));
+    }
 
-  /**
-   * Fired when resource loading priority is changed (EXPERIMENTAL)
-   *
-   * @return ResourceChangedPriority object
-   */
-  @Beta
-  public static Event<ResourceChangedPriority> resourceChangedPriority() {
-    return new Event<>(DOMAIN_NAME + ".resourceChangedPriority",
-                       map("requestId", ResourceChangedPriority.class));
-  }
+    public static Event<org.openqa.selenium.devtools.network.model.RequestWillBeSentExtraInfo> requestWillBeSentExtraInfo() {
+        return new Event<>("Network.requestWillBeSentExtraInfo", input -> input.read(org.openqa.selenium.devtools.network.model.RequestWillBeSentExtraInfo.class));
+    }
 
-  /**
-   * Fired when a signed exchange was received over the network (EXPERIMENTAL)
-   *
-   * @return SignedExchangeReceived object
-   */
-  @Beta
-  public static Event<SignedExchangeReceived> signedExchangeReceived() {
-    return new Event<>(DOMAIN_NAME + ".signedExchangeReceived",
-                       map("requestId", SignedExchangeReceived.class));
-  }
-
-  /**
-   * Fired when page is about to send HTTP request
-   *
-   * @return RequestWillBeSent object
-   */
-  public static Event<RequestWillBeSent> requestWillBeSent() {
-    return new Event<>(DOMAIN_NAME + ".requestWillBeSent",
-                       map("requestId", RequestWillBeSent.class));
-  }
-
-  /**
-   * Details of an intercepted HTTP request, which must be either allowed, blocked, modified or mocked.(EXPERIMENTAL)
-   *
-   * @return {@link RequestIntercepted} Object
-   */
-  @Beta
-  public static Event<RequestIntercepted> requestIntercepted() {
-    return new Event<>(DOMAIN_NAME + ".requestIntercepted",
-                       input -> input.read(RequestIntercepted.class)
-    );
-  }
-
-  /**
-   * Fired when HTTP response is available.
-   *
-   * @return {@link ResponseReceived} Object
-   */
-  public static Event<ResponseReceived> responseReceived() {
-    return new Event<>(DOMAIN_NAME + ".responseReceived", map("requestId", ResponseReceived.class));
-  }
-
-  /**
-   * Fired when WebSocket message error occurs.
-   */
-  public static Event<WebSocketFrameError> webSocketFrameError() {
-    return new Event<>(DOMAIN_NAME + ".webSocketFrameError",
-                       map("requestId", WebSocketFrameError.class));
-  }
-
-
-  /**
-   * Fired upon WebSocket creation.
-   */
-  public static Event<WebSocketCreated> webSocketCreated() {
-    return new Event<>(DOMAIN_NAME + ".webSocketCreated", map("requestId", WebSocketCreated.class));
-  }
-
-  /**
-   * Fired upon WebSocket creation.
-   */
-  public static Event<WebSocketClosed> webSocketClosed() {
-    return new Event<>(DOMAIN_NAME + ".webSocketClosed", map("requestId", WebSocketClosed.class));
-  }
-
-  /**
-   * Fired when WebSocket message is received.
-   */
-  public static Event<WebSocketFrame> webSocketFrameReceived() {
-    return new Event<>(DOMAIN_NAME + ".webSocketFrameReceived",
-                       map("requestId", WebSocketFrame.class));
-  }
-
-  /**
-   * Fired when WebSocket message is sent.
-   */
-  public static Event<WebSocketFrame> webSocketFrameSent() {
-    return new Event<>(DOMAIN_NAME + ".webSocketFrameSent", map("requestId", WebSocketFrame.class));
-  }
+    public static Event<org.openqa.selenium.devtools.network.model.ResponseReceivedExtraInfo> responseReceivedExtraInfo() {
+        return new Event<>("Network.responseReceivedExtraInfo", input -> input.read(org.openqa.selenium.devtools.network.model.ResponseReceivedExtraInfo.class));
+    }
 }

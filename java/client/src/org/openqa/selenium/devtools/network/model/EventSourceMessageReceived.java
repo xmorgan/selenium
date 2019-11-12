@@ -1,127 +1,96 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.network.model;
 
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
 
 /**
- * Object for storing Network.eventSourceMessageReceived response
+ * Fired when EventSource message is received.
  */
 public class EventSourceMessageReceived {
 
-  /**
-   * Request identifier
-   */
-  private final String requestId;
+    private final org.openqa.selenium.devtools.network.model.RequestId requestId;
 
-  /**
-   * MonotonicTime
-   */
-  private final MonotonicTime timestamp;
+    private final org.openqa.selenium.devtools.network.model.MonotonicTime timestamp;
 
-  /**
-   * Message type
-   */
-  private final String eventName;
+    private final java.lang.String eventName;
 
-  /**
-   * Message identifier
-   */
-  private final String eventId;
+    private final java.lang.String eventId;
 
-  /**
-   * Message content
-   */
-  private final String data;
+    private final java.lang.String data;
 
-  private EventSourceMessageReceived(String requestId, MonotonicTime timestamp, String eventName,
-                                     String eventId, String data) {
-    this.requestId = requestId;
-    this.timestamp = timestamp;
-    this.eventName = eventName;
-    this.eventId = eventId;
-    this.data = data;
-  }
-
-  private static EventSourceMessageReceived fromJson(JsonInput input) {
-    String requestId = input.nextString();
-    MonotonicTime timestamp = null;
-    String eventName = null;
-    String eventId = null;
-    String data = null;
-
-    while (input.hasNext()) {
-
-      switch (input.nextName()) {
-        case "timestamp":
-          timestamp = MonotonicTime.parse(input.nextNumber());
-          break;
-
-        case "eventName":
-          eventName = input.nextString();
-          break;
-
-        case "eventId":
-          eventId = input.nextString();
-          break;
-
-        case "data":
-          data = input.nextString();
-          break;
-
-        default:
-          input.skipValue();
-          break;
-      }
+    public EventSourceMessageReceived(org.openqa.selenium.devtools.network.model.RequestId requestId, org.openqa.selenium.devtools.network.model.MonotonicTime timestamp, java.lang.String eventName, java.lang.String eventId, java.lang.String data) {
+        this.requestId = java.util.Objects.requireNonNull(requestId, "requestId is required");
+        this.timestamp = java.util.Objects.requireNonNull(timestamp, "timestamp is required");
+        this.eventName = java.util.Objects.requireNonNull(eventName, "eventName is required");
+        this.eventId = java.util.Objects.requireNonNull(eventId, "eventId is required");
+        this.data = java.util.Objects.requireNonNull(data, "data is required");
     }
 
-    return new EventSourceMessageReceived(requestId, timestamp, eventName, eventId, data);
-  }
+    /**
+     * Request identifier.
+     */
+    public org.openqa.selenium.devtools.network.model.RequestId getRequestId() {
+        return requestId;
+    }
 
-  public String getRequestId() {
-    return requestId;
-  }
+    /**
+     * Timestamp.
+     */
+    public org.openqa.selenium.devtools.network.model.MonotonicTime getTimestamp() {
+        return timestamp;
+    }
 
-  public MonotonicTime getTimestamp() {
-    return timestamp;
-  }
+    /**
+     * Message type.
+     */
+    public java.lang.String getEventName() {
+        return eventName;
+    }
 
-  public String getEventName() {
-    return eventName;
-  }
+    /**
+     * Message identifier.
+     */
+    public java.lang.String getEventId() {
+        return eventId;
+    }
 
-  public String getEventId() {
-    return eventId;
-  }
+    /**
+     * Message content.
+     */
+    public java.lang.String getData() {
+        return data;
+    }
 
-  public String getData() {
-    return data;
-  }
-
-  @Override
-  public String toString() {
-    return "EventSourceMessageReceived{" +
-           "requestId='" + requestId + '\'' +
-           ", timestamp=" + timestamp.getTimeStamp().toString() +
-           ", eventName='" + eventName + '\'' +
-           ", eventId='" + eventId + '\'' +
-           ", data='" + data + '\'' +
-           '}';
-  }
-
+    private static EventSourceMessageReceived fromJson(JsonInput input) {
+        org.openqa.selenium.devtools.network.model.RequestId requestId = null;
+        org.openqa.selenium.devtools.network.model.MonotonicTime timestamp = null;
+        java.lang.String eventName = null;
+        java.lang.String eventId = null;
+        java.lang.String data = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "requestId":
+                    requestId = input.read(org.openqa.selenium.devtools.network.model.RequestId.class);
+                    break;
+                case "timestamp":
+                    timestamp = input.read(org.openqa.selenium.devtools.network.model.MonotonicTime.class);
+                    break;
+                case "eventName":
+                    eventName = input.nextString();
+                    break;
+                case "eventId":
+                    eventId = input.nextString();
+                    break;
+                case "data":
+                    data = input.nextString();
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new EventSourceMessageReceived(requestId, timestamp, eventName, eventId, data);
+    }
 }

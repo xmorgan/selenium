@@ -1,146 +1,110 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.network.model;
 
-import static java.util.Objects.requireNonNull;
-
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
 
 /**
- * Object for storing Network.loadingFailed response
+ * Fired when HTTP request has failed to load.
  */
 public class LoadingFailed {
 
-  /**
-   * Request identifier
-   */
-  private final RequestId requestId;
+    private final org.openqa.selenium.devtools.network.model.RequestId requestId;
 
-  /**
-   * MonotonicTime
-   */
-  private final MonotonicTime timestamp;
+    private final org.openqa.selenium.devtools.network.model.MonotonicTime timestamp;
 
-  /**
-   * Resource type
-   */
-  private final ResourceType type;
+    private final org.openqa.selenium.devtools.network.model.ResourceType type;
 
-  /**
-   * User friendly error message
-   */
-  private final String errorText;
+    private final java.lang.String errorText;
 
-  /**
-   * True if loading was canceled
-   */
-  private final Boolean canceled;
+    private final java.lang.Boolean canceled;
 
-  /**
-   * The reason why loading was blocked, if any
-   */
-  private final BlockedReason blockedReason;
+    private final org.openqa.selenium.devtools.network.model.BlockedReason blockedReason;
 
-  private LoadingFailed(RequestId requestId, MonotonicTime timestamp,
-                        ResourceType resourceType, String errorText, Boolean canceled,
-                        BlockedReason blockedReason) {
-    this.requestId = requireNonNull(requestId, "'requestId' is required for LoadingFailed");
-    this.timestamp = requireNonNull(timestamp, "'timestamp' is required for LoadingFailed");
-    this.type = requireNonNull(resourceType, "'resourceType' is required for LoadingFailed");
-    this.errorText = requireNonNull(errorText, "'errorText' is required for LoadingFailed");
-    this.canceled = canceled;
-    this.blockedReason = blockedReason;
-  }
-
-  private static LoadingFailed fromJson(JsonInput input) {
-    RequestId requestId = new RequestId(input.nextString());
-    MonotonicTime timestamp = null;
-    ResourceType type = null;
-    String errorText = null;
-    Boolean canceled = null;
-    BlockedReason blockedReason = null;
-
-    while (input.hasNext()) {
-
-      switch (input.nextName()) {
-        case "timestamp":
-          timestamp = MonotonicTime.parse(input.nextNumber());
-          break;
-
-        case "type":
-          type = ResourceType.fromString(input.nextString());
-          break;
-
-        case "errorText":
-          errorText = input.nextString();
-          break;
-
-        case "canceled":
-          canceled = input.nextBoolean();
-          break;
-
-        case "blockedReason":
-          blockedReason = BlockedReason.fromString(input.nextString());
-          break;
-
-        default:
-          input.skipValue();
-          break;
-      }
+    public LoadingFailed(org.openqa.selenium.devtools.network.model.RequestId requestId, org.openqa.selenium.devtools.network.model.MonotonicTime timestamp, org.openqa.selenium.devtools.network.model.ResourceType type, java.lang.String errorText, java.lang.Boolean canceled, org.openqa.selenium.devtools.network.model.BlockedReason blockedReason) {
+        this.requestId = java.util.Objects.requireNonNull(requestId, "requestId is required");
+        this.timestamp = java.util.Objects.requireNonNull(timestamp, "timestamp is required");
+        this.type = java.util.Objects.requireNonNull(type, "type is required");
+        this.errorText = java.util.Objects.requireNonNull(errorText, "errorText is required");
+        this.canceled = canceled;
+        this.blockedReason = blockedReason;
     }
 
-    return new LoadingFailed(requestId, timestamp, type, errorText, canceled, blockedReason);
-  }
+    /**
+     * Request identifier.
+     */
+    public org.openqa.selenium.devtools.network.model.RequestId getRequestId() {
+        return requestId;
+    }
 
-  public RequestId getRequestId() {
-    return requestId;
-  }
+    /**
+     * Timestamp.
+     */
+    public org.openqa.selenium.devtools.network.model.MonotonicTime getTimestamp() {
+        return timestamp;
+    }
 
-  public MonotonicTime getTimestamp() {
-    return timestamp;
-  }
+    /**
+     * Resource type.
+     */
+    public org.openqa.selenium.devtools.network.model.ResourceType getType() {
+        return type;
+    }
 
-  public ResourceType getType() {
-    return type;
-  }
+    /**
+     * User friendly error message.
+     */
+    public java.lang.String getErrorText() {
+        return errorText;
+    }
 
-  public String getErrorText() {
-    return errorText;
-  }
+    /**
+     * True if loading was canceled.
+     */
+    public java.lang.Boolean getCanceled() {
+        return canceled;
+    }
 
-  public Boolean getCanceled() {
-    return canceled;
-  }
+    /**
+     * The reason why loading was blocked, if any.
+     */
+    public org.openqa.selenium.devtools.network.model.BlockedReason getBlockedReason() {
+        return blockedReason;
+    }
 
-  public BlockedReason getBlockedReason() {
-    return blockedReason;
-  }
-
-  @Override
-  public String toString() {
-    return "LoadingFailed{" +
-           "requestId=" + requestId +
-           ", timestamp=" + timestamp.getTimeStamp().toString() +
-           ", resourceType=" + type +
-           ", errorText='" + errorText + '\'' +
-           ", canceled=" + canceled +
-           ", blockedReason=" + blockedReason +
-           '}';
-  }
-
+    private static LoadingFailed fromJson(JsonInput input) {
+        org.openqa.selenium.devtools.network.model.RequestId requestId = null;
+        org.openqa.selenium.devtools.network.model.MonotonicTime timestamp = null;
+        org.openqa.selenium.devtools.network.model.ResourceType type = null;
+        java.lang.String errorText = null;
+        java.lang.Boolean canceled = null;
+        org.openqa.selenium.devtools.network.model.BlockedReason blockedReason = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "requestId":
+                    requestId = input.read(org.openqa.selenium.devtools.network.model.RequestId.class);
+                    break;
+                case "timestamp":
+                    timestamp = input.read(org.openqa.selenium.devtools.network.model.MonotonicTime.class);
+                    break;
+                case "type":
+                    type = input.read(org.openqa.selenium.devtools.network.model.ResourceType.class);
+                    break;
+                case "errorText":
+                    errorText = input.nextString();
+                    break;
+                case "canceled":
+                    canceled = input.nextBoolean();
+                    break;
+                case "blockedReason":
+                    blockedReason = input.read(org.openqa.selenium.devtools.network.model.BlockedReason.class);
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new LoadingFailed(requestId, timestamp, type, errorText, canceled, blockedReason);
+    }
 }

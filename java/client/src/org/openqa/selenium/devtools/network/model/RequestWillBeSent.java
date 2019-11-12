@@ -1,235 +1,180 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.network.model;
 
-import static java.util.Objects.requireNonNull;
-
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
 
 /**
- * Object for storing Network.requestWillBeSent response
+ * Fired when page is about to send HTTP request.
  */
 public class RequestWillBeSent {
 
-  /**
-   * Request identifier
-   */
-  private final RequestId requestId;
+    private final org.openqa.selenium.devtools.network.model.RequestId requestId;
 
-  /**
-   * Loader identifier. Empty string if the request is fetched from worker
-   */
-  private final LoaderId loaderId;
+    private final org.openqa.selenium.devtools.network.model.LoaderId loaderId;
 
-  /**
-   * URL of the document this request is loaded for
-   */
-  private final String documentURL;
+    private final java.lang.String documentURL;
 
-  /**
-   * Request data
-   */
-  private final Request request;
+    private final org.openqa.selenium.devtools.network.model.Request request;
 
-  /**
-   * MonotonicTime
-   */
-  private final MonotonicTime timestamp;
+    private final org.openqa.selenium.devtools.network.model.MonotonicTime timestamp;
 
-  /**
-   * MonotonicTime
-   */
-  private final Number wallTime;
+    private final org.openqa.selenium.devtools.network.model.TimeSinceEpoch wallTime;
 
+    private final org.openqa.selenium.devtools.network.model.Initiator initiator;
 
-  /**
-   * Request initiator
-   */
-  private final Initiator initiator;
+    private final org.openqa.selenium.devtools.network.model.Response redirectResponse;
 
-  /**
-   * Redirect response data
-   */
-  private final Response redirectResponse;
+    private final org.openqa.selenium.devtools.network.model.ResourceType type;
 
-  /**
-   * Type of this resource
-   */
-  private final ResourceType type;
+    private final org.openqa.selenium.devtools.page.model.FrameId frameId;
 
+    private final java.lang.Boolean hasUserGesture;
 
-  /**
-   * Frame identifier
-   */
-  private final String frameId;
-
-  /**
-   * Whether the request is initiated by a user gesture. Defaults to false
-   */
-  private final Boolean hasUserGesture;
-
-  private RequestWillBeSent(RequestId requestId,
-                            LoaderId loaderId, String documentURL,
-                            Request request, MonotonicTime timestamp, Number wallTime,
-                            Initiator initiator,
-                            Response redirectResponse,
-                            ResourceType type, String frameId, Boolean hasUserGesture) {
-    this.requestId = requireNonNull(requestId, "'requestId' is required for RequestWillBeSent");
-    this.loaderId = requireNonNull(loaderId, "'loaderId' is required for RequestWillBeSent");
-    this.documentURL =
-        requireNonNull(documentURL, "'documentURL' is required for RequestWillBeSent");
-    this.request = requireNonNull(request, "'request' is required for RequestWillBeSent");
-    this.timestamp = requireNonNull(timestamp, "'timestamp' is required for RequestWillBeSent");
-    this.wallTime = requireNonNull(wallTime, "'wallTime' is required for RequestWillBeSent");
-    this.initiator = requireNonNull(initiator, "'initiator' is required for RequestWillBeSent");
-    this.redirectResponse = redirectResponse;
-    this.type = type;
-    this.frameId = frameId;
-    this.hasUserGesture = hasUserGesture;
-  }
-
-  private static RequestWillBeSent fromJson(JsonInput input) {
-
-    RequestId requestId = new RequestId(input.nextString());
-    LoaderId loaderId = null;
-    String documentURL = null;
-    Request request = null;
-    MonotonicTime timestamp = null;
-    Number wallTime = null;
-    Initiator initiator = null;
-    Response redirectResponse = null;
-    ResourceType type = null;
-    String frameId = null;
-    Boolean hasUserGesture = null;
-
-    while (input.hasNext()) {
-
-      switch (input.nextName()) {
-
-        case "loaderId":
-          loaderId = new LoaderId(input.nextString());
-          break;
-
-        case "documentURL":
-          documentURL = input.nextString();
-          break;
-
-        case "request":
-          request = input.read(Request.class);
-          break;
-
-        case "timestamp":
-          timestamp = MonotonicTime.parse(input.nextNumber());
-          break;
-
-        case "wallTime":
-          wallTime = input.nextNumber();
-          break;
-
-        case "initiator":
-          initiator = input.read(Initiator.class);
-          break;
-
-        case "redirectResponse":
-          redirectResponse = input.read(Response.class);
-          break;
-
-        case "type":
-          type = ResourceType.fromString(input.nextString());
-          break;
-
-        case "frameId":
-          frameId = input.nextString();
-          break;
-
-        case "hasUserGesture":
-          hasUserGesture = input.nextBoolean();
-          break;
-
-        default:
-          input.skipValue();
-          break;
-      }
+    public RequestWillBeSent(org.openqa.selenium.devtools.network.model.RequestId requestId, org.openqa.selenium.devtools.network.model.LoaderId loaderId, java.lang.String documentURL, org.openqa.selenium.devtools.network.model.Request request, org.openqa.selenium.devtools.network.model.MonotonicTime timestamp, org.openqa.selenium.devtools.network.model.TimeSinceEpoch wallTime, org.openqa.selenium.devtools.network.model.Initiator initiator, org.openqa.selenium.devtools.network.model.Response redirectResponse, org.openqa.selenium.devtools.network.model.ResourceType type, org.openqa.selenium.devtools.page.model.FrameId frameId, java.lang.Boolean hasUserGesture) {
+        this.requestId = java.util.Objects.requireNonNull(requestId, "requestId is required");
+        this.loaderId = java.util.Objects.requireNonNull(loaderId, "loaderId is required");
+        this.documentURL = java.util.Objects.requireNonNull(documentURL, "documentURL is required");
+        this.request = java.util.Objects.requireNonNull(request, "request is required");
+        this.timestamp = java.util.Objects.requireNonNull(timestamp, "timestamp is required");
+        this.wallTime = java.util.Objects.requireNonNull(wallTime, "wallTime is required");
+        this.initiator = java.util.Objects.requireNonNull(initiator, "initiator is required");
+        this.redirectResponse = redirectResponse;
+        this.type = type;
+        this.frameId = frameId;
+        this.hasUserGesture = hasUserGesture;
     }
 
-    return new RequestWillBeSent(requestId, loaderId, documentURL, request, timestamp, wallTime,
-                                 initiator, redirectResponse, type, frameId, hasUserGesture);
-  }
+    /**
+     * Request identifier.
+     */
+    public org.openqa.selenium.devtools.network.model.RequestId getRequestId() {
+        return requestId;
+    }
 
-  public RequestId getRequestId() {
-    return requestId;
-  }
+    /**
+     * Loader identifier. Empty string if the request is fetched from worker.
+     */
+    public org.openqa.selenium.devtools.network.model.LoaderId getLoaderId() {
+        return loaderId;
+    }
 
-  public LoaderId getLoaderId() {
-    return loaderId;
-  }
+    /**
+     * URL of the document this request is loaded for.
+     */
+    public java.lang.String getDocumentURL() {
+        return documentURL;
+    }
 
-  public String getDocumentURL() {
-    return documentURL;
-  }
+    /**
+     * Request data.
+     */
+    public org.openqa.selenium.devtools.network.model.Request getRequest() {
+        return request;
+    }
 
-  public Request getRequest() {
-    return request;
-  }
+    /**
+     * Timestamp.
+     */
+    public org.openqa.selenium.devtools.network.model.MonotonicTime getTimestamp() {
+        return timestamp;
+    }
 
-  public MonotonicTime getTimestamp() {
-    return timestamp;
-  }
+    /**
+     * Timestamp.
+     */
+    public org.openqa.selenium.devtools.network.model.TimeSinceEpoch getWallTime() {
+        return wallTime;
+    }
 
-  public Number getWallTime() {
-    return wallTime;
-  }
+    /**
+     * Request initiator.
+     */
+    public org.openqa.selenium.devtools.network.model.Initiator getInitiator() {
+        return initiator;
+    }
 
-  public Initiator getInitiator() {
-    return initiator;
-  }
+    /**
+     * Redirect response data.
+     */
+    public org.openqa.selenium.devtools.network.model.Response getRedirectResponse() {
+        return redirectResponse;
+    }
 
-  public Response getRedirectResponse() {
-    return redirectResponse;
-  }
+    /**
+     * Type of this resource.
+     */
+    public org.openqa.selenium.devtools.network.model.ResourceType getType() {
+        return type;
+    }
 
-  public ResourceType getType() {
-    return type;
-  }
+    /**
+     * Frame identifier.
+     */
+    public org.openqa.selenium.devtools.page.model.FrameId getFrameId() {
+        return frameId;
+    }
 
-  public String getFrameId() {
-    return frameId;
-  }
+    /**
+     * Whether the request is initiated by a user gesture. Defaults to false.
+     */
+    public java.lang.Boolean getHasUserGesture() {
+        return hasUserGesture;
+    }
 
-  public Boolean getHasUserGesture() {
-    return hasUserGesture;
-  }
-
-  @Override
-  public String toString() {
-    return "RequestWillBeSent{" +
-           "requestId=" + requestId +
-           ", loaderId=" + loaderId +
-           ", documentURL='" + documentURL + '\'' +
-           ", request=" + request +
-           ", timestamp=" + timestamp.getTimeStamp().toString() +
-           ", wallTime=" + wallTime +
-           ", initiator=" + initiator +
-           ", redirectResponse=" + redirectResponse +
-           ", type=" + type +
-           ", frameId='" + frameId + '\'' +
-           ", hasUserGesture=" + hasUserGesture +
-           '}';
-  }
-
+    private static RequestWillBeSent fromJson(JsonInput input) {
+        org.openqa.selenium.devtools.network.model.RequestId requestId = null;
+        org.openqa.selenium.devtools.network.model.LoaderId loaderId = null;
+        java.lang.String documentURL = null;
+        org.openqa.selenium.devtools.network.model.Request request = null;
+        org.openqa.selenium.devtools.network.model.MonotonicTime timestamp = null;
+        org.openqa.selenium.devtools.network.model.TimeSinceEpoch wallTime = null;
+        org.openqa.selenium.devtools.network.model.Initiator initiator = null;
+        org.openqa.selenium.devtools.network.model.Response redirectResponse = null;
+        org.openqa.selenium.devtools.network.model.ResourceType type = null;
+        org.openqa.selenium.devtools.page.model.FrameId frameId = null;
+        java.lang.Boolean hasUserGesture = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "requestId":
+                    requestId = input.read(org.openqa.selenium.devtools.network.model.RequestId.class);
+                    break;
+                case "loaderId":
+                    loaderId = input.read(org.openqa.selenium.devtools.network.model.LoaderId.class);
+                    break;
+                case "documentURL":
+                    documentURL = input.nextString();
+                    break;
+                case "request":
+                    request = input.read(org.openqa.selenium.devtools.network.model.Request.class);
+                    break;
+                case "timestamp":
+                    timestamp = input.read(org.openqa.selenium.devtools.network.model.MonotonicTime.class);
+                    break;
+                case "wallTime":
+                    wallTime = input.read(org.openqa.selenium.devtools.network.model.TimeSinceEpoch.class);
+                    break;
+                case "initiator":
+                    initiator = input.read(org.openqa.selenium.devtools.network.model.Initiator.class);
+                    break;
+                case "redirectResponse":
+                    redirectResponse = input.read(org.openqa.selenium.devtools.network.model.Response.class);
+                    break;
+                case "type":
+                    type = input.read(org.openqa.selenium.devtools.network.model.ResourceType.class);
+                    break;
+                case "frameId":
+                    frameId = input.read(org.openqa.selenium.devtools.page.model.FrameId.class);
+                    break;
+                case "hasUserGesture":
+                    hasUserGesture = input.nextBoolean();
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new RequestWillBeSent(requestId, loaderId, documentURL, request, timestamp, wallTime, initiator, redirectResponse, type, frameId, hasUserGesture);
+    }
 }

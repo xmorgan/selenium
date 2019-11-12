@@ -1,78 +1,100 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.network.model;
 
-import java.util.Objects;
+import org.openqa.selenium.Beta;
+import org.openqa.selenium.json.JsonInput;
 
 /**
- * Response to an AuthChallenge
+ * Response to an AuthChallenge.
  */
+@org.openqa.selenium.Beta()
 public class AuthChallengeResponse {
 
-  /**
-   * The decision on what to do in response to the authorization challenge. Default means deferring to the default behavior of the net stack,
-   * which will likely either the Cancel authentication or display a popup dialog box
-   */
-  private final String response;
+    public enum Response {
 
-  /**
-   * The username to provide, possibly empty. Should only be set if response is ProvideCredentials
-   */
-  private final String username;
+        DEFAULT("Default"), CANCELAUTH("CancelAuth"), PROVIDECREDENTIALS("ProvideCredentials");
 
-  /**
-   * The password to provide, possibly empty. Should only be set if response is ProvideCredentials
-   */
-  private final String password;
+        private String value;
 
-  public AuthChallengeResponse(String response, String username, String password) {
-    this.response = Objects.requireNonNull(response, "response must be set.");
-    this.username = username;
-    this.password = password;
-  }
+        Response(String value) {
+            this.value = value;
+        }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+        public static Response fromString(String s) {
+            return java.util.Arrays.stream(Response.values()).filter(rs -> rs.value.equalsIgnoreCase(s)).findFirst().orElseThrow(() -> new org.openqa.selenium.devtools.DevToolsException("Given value " + s + " is not found within Response "));
+        }
+
+        public String toString() {
+            return value;
+        }
+
+        public String toJson() {
+            return value;
+        }
+
+        private static Response fromJson(JsonInput input) {
+            return fromString(input.nextString());
+        }
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
+
+    private final Response response;
+
+    private final java.lang.String username;
+
+    private final java.lang.String password;
+
+    public AuthChallengeResponse(Response response, java.lang.String username, java.lang.String password) {
+        this.response = java.util.Objects.requireNonNull(response, "response is required");
+        this.username = username;
+        this.password = password;
     }
-    AuthChallengeResponse that = (AuthChallengeResponse) o;
-    return Objects.equals(response, that.response) &&
-           Objects.equals(username, that.username) &&
-           Objects.equals(password, that.password);
-  }
 
-  @Override
-  public int hashCode() {
+    /**
+     * The decision on what to do in response to the authorization challenge.  Default means
+     * deferring to the default behavior of the net stack, which will likely either the Cancel
+     * authentication or display a popup dialog box.
+     */
+    public Response getResponse() {
+        return response;
+    }
 
-    return Objects.hash(response, username, password);
-  }
+    /**
+     * The username to provide, possibly empty. Should only be set if response is
+     * ProvideCredentials.
+     */
+    public java.lang.String getUsername() {
+        return username;
+    }
 
-  @Override
-  public String toString() {
-    return "AuthChallengeResponse{" +
-           "response='" + response + '\'' +
-           ", username='" + username + '\'' +
-           ", password='" + password + '\'' +
-           '}';
-  }
+    /**
+     * The password to provide, possibly empty. Should only be set if response is
+     * ProvideCredentials.
+     */
+    public java.lang.String getPassword() {
+        return password;
+    }
 
+    private static AuthChallengeResponse fromJson(JsonInput input) {
+        Response response = null;
+        java.lang.String username = null;
+        java.lang.String password = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "response":
+                    response = Response.fromString(input.nextString());
+                    break;
+                case "username":
+                    username = input.nextString();
+                    break;
+                case "password":
+                    password = input.nextString();
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new AuthChallengeResponse(response, username, password);
+    }
 }

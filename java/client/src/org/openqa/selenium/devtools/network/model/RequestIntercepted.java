@@ -1,235 +1,203 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.network.model;
 
-import static java.util.Objects.requireNonNull;
-
-import org.openqa.selenium.json.Json;
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
 
+/**
+ * Details of an intercepted HTTP request, which must be either allowed, blocked, modified or
+ * mocked.
+ * Deprecated, use Fetch.requestPaused instead.
+ */
+@org.openqa.selenium.Beta()
+@java.lang.Deprecated()
 public class RequestIntercepted {
 
-  /**
-   * Each request the page makes will have a unique id, however if any redirects are encountered while processing that fetch, they will be reported with the same id as the original fetch. Likewise if HTTP authentication is needed then the same fetch id will be used
-   */
-  private final InterceptionId interceptionId;
-  /**
-   * Request data
-   */
-  private final Request request;
-  /**
-   * The id of the frame that initiated the request.
-   */
-  private final String frameId;
-  /**
-   * How the requested resource will be used.
-   */
-  private final ResourceType resourceType;
+    private final org.openqa.selenium.devtools.network.model.InterceptionId interceptionId;
 
-  /**
-   * Whether this is a navigation request, which can abort the navigation completely.
-   */
-  private final boolean isNavigationRequest;
+    private final org.openqa.selenium.devtools.network.model.Request request;
 
-  /**
-   * Set if the request is a navigation that will result in a download. Only present after response is received from the server (i.e. HeadersReceived stage).
-   * Optional
-   */
-  private final Boolean isDownload;
-  /**
-   * Redirect location, only sent if a redirect was intercepted.
-   * Optional
-   */
-  private final String redirectUrl;
-  /**
-   * Details of the Authorization Challenge encountered. If this is set then continueInterceptedRequest must contain an authChallengeResponse.
-   * Optional
-   */
-  private final AuthChallenge authChallenge;
-  /**
-   * Response error if intercepted at response stage or if redirect occurred while intercepting request.
-   * Optional
-   */
-  private final ErrorReason responseErrorReason;
+    private final org.openqa.selenium.devtools.page.model.FrameId frameId;
 
-  /**
-   * Response code if intercepted at response stage or if redirect occurred while intercepting request or auth retry occurred.
-   * Optional
-   */
-  private final Number responseStatusCode;
+    private final org.openqa.selenium.devtools.network.model.ResourceType resourceType;
 
-  /**
-   * Response headers if intercepted at the response stage or if redirect occurred while intercepting request or auth retry occurred.
-   * Optional
-   */
-  private final Object responseHeaders;
-  /**
-   * If the intercepted request had a corresponding requestWillBeSent event fired for it, then this requestId will be the same as the requestId present in the requestWillBeSent event.
-   * Optional
-   */
-  private final String requestId;
+    private final java.lang.Boolean isNavigationRequest;
 
+    private final java.lang.Boolean isDownload;
 
-  private RequestIntercepted(InterceptionId interceptionId,
-                             Request request,
-                             String frameId,
-                             ResourceType resourceType,
-                             boolean isNavigationRequest,
-                             Boolean isDownload,
-                             String redirectUrl,
-                             AuthChallenge authChallenge,
-                             ErrorReason responseErrorReason,
-                             Number responseStatusCode,
-                             Object responseHeaders,
-                             String requestId) {
-    this.interceptionId =
-        requireNonNull(interceptionId, "'interceptionId' is required for RequestIntercepted");
-    this.request = requireNonNull(request, "'request' is required for RequestIntercepted");
-    this.frameId = requireNonNull(frameId, "'frameId' is required for RequestIntercepted");
-    this.resourceType =
-        requireNonNull(resourceType, "'resourceType' is required for RequestIntercepted");
-    this.isNavigationRequest = isNavigationRequest;
-    this.isDownload = isDownload;
-    this.redirectUrl = redirectUrl;
-    this.authChallenge = authChallenge;
-    this.responseErrorReason = responseErrorReason;
-    this.responseStatusCode = responseStatusCode;
-    this.responseHeaders = responseHeaders;
-    this.requestId = requestId;
-  }
+    private final java.lang.String redirectUrl;
 
-  private static RequestIntercepted fromJson(JsonInput input) {
-    InterceptionId interceptionId = null;
-    Request request = null;
-    String frameId = null;
-    ResourceType resourceType = null;
-    Boolean isNavigationRequest = null;
-    Boolean isDownload = null;
-    String redirectUrl = null;
-    AuthChallenge authChallenge = null;
-    ErrorReason responseErrorReason = null;
-    Number responseStatusCode = null;
-    Object responseHeaders = null;
-    String requestId = null;
-    input.beginObject();
-    while (input.hasNext()) {
-      switch (input.nextName()) {
-        case "interceptionId":
-          interceptionId = input.read(InterceptionId.class);
-          break;
-        case "request":
-          request = input.read(Request.class);
-          break;
-        case "frameId":
-          frameId = input.nextString();
-          break;
-        case "resourceType":
-          resourceType = ResourceType.fromString(input.nextString());
-          break;
-        case "isNavigationRequest":
-          isNavigationRequest = input.nextBoolean();
-          break;
-        case "isDownload":
-          isDownload = input.nextBoolean();
-          break;
-        case "redirectUrl":
-          redirectUrl = input.nextString();
-          break;
-        case "authChallenge":
-          authChallenge = input.read(AuthChallenge.class);
-          break;
-        case "responseErrorReason":
-          responseErrorReason = ErrorReason.fromString(input.nextString());
-          break;
-        case "responseStatusCode":
-          responseStatusCode = input.nextNumber();
-          break;
-        case "responseHeaders":
-          responseHeaders = input.read(Json.MAP_TYPE);
-          break;
-        case "requestId":
-          requestId = input.nextString();
-          break;
-        default:
-          input.skipValue();
-          break;
-      }
+    private final org.openqa.selenium.devtools.network.model.AuthChallenge authChallenge;
+
+    private final org.openqa.selenium.devtools.network.model.ErrorReason responseErrorReason;
+
+    private final java.lang.Integer responseStatusCode;
+
+    private final org.openqa.selenium.devtools.network.model.Headers responseHeaders;
+
+    private final org.openqa.selenium.devtools.network.model.RequestId requestId;
+
+    public RequestIntercepted(org.openqa.selenium.devtools.network.model.InterceptionId interceptionId, org.openqa.selenium.devtools.network.model.Request request, org.openqa.selenium.devtools.page.model.FrameId frameId, org.openqa.selenium.devtools.network.model.ResourceType resourceType, java.lang.Boolean isNavigationRequest, java.lang.Boolean isDownload, java.lang.String redirectUrl, org.openqa.selenium.devtools.network.model.AuthChallenge authChallenge, org.openqa.selenium.devtools.network.model.ErrorReason responseErrorReason, java.lang.Integer responseStatusCode, org.openqa.selenium.devtools.network.model.Headers responseHeaders, org.openqa.selenium.devtools.network.model.RequestId requestId) {
+        this.interceptionId = java.util.Objects.requireNonNull(interceptionId, "interceptionId is required");
+        this.request = java.util.Objects.requireNonNull(request, "request is required");
+        this.frameId = java.util.Objects.requireNonNull(frameId, "frameId is required");
+        this.resourceType = java.util.Objects.requireNonNull(resourceType, "resourceType is required");
+        this.isNavigationRequest = java.util.Objects.requireNonNull(isNavigationRequest, "isNavigationRequest is required");
+        this.isDownload = isDownload;
+        this.redirectUrl = redirectUrl;
+        this.authChallenge = authChallenge;
+        this.responseErrorReason = responseErrorReason;
+        this.responseStatusCode = responseStatusCode;
+        this.responseHeaders = responseHeaders;
+        this.requestId = requestId;
     }
-    input.endObject();
-    return new RequestIntercepted(interceptionId,
-                                  request,
-                                  frameId,
-                                  resourceType,
-                                  isNavigationRequest,
-                                  isDownload,
-                                  redirectUrl,
-                                  authChallenge,
-                                  responseErrorReason,
-                                  responseStatusCode,
-                                  responseHeaders,
-                                  requestId);
-  }
 
-  public InterceptionId getInterceptionId() {
-    return interceptionId;
-  }
+    /**
+     * Each request the page makes will have a unique id, however if any redirects are encountered
+     * while processing that fetch, they will be reported with the same id as the original fetch.
+     * Likewise if HTTP authentication is needed then the same fetch id will be used.
+     */
+    public org.openqa.selenium.devtools.network.model.InterceptionId getInterceptionId() {
+        return interceptionId;
+    }
 
-  public Request getRequest() {
-    return request;
-  }
+    public org.openqa.selenium.devtools.network.model.Request getRequest() {
+        return request;
+    }
 
-  public String getFrameId() {
-    return frameId;
-  }
+    /**
+     * The id of the frame that initiated the request.
+     */
+    public org.openqa.selenium.devtools.page.model.FrameId getFrameId() {
+        return frameId;
+    }
 
-  public ResourceType getResourceType() {
-    return resourceType;
-  }
+    /**
+     * How the requested resource will be used.
+     */
+    public org.openqa.selenium.devtools.network.model.ResourceType getResourceType() {
+        return resourceType;
+    }
 
-  public boolean isNavigationRequest() {
-    return isNavigationRequest;
-  }
+    /**
+     * Whether this is a navigation request, which can abort the navigation completely.
+     */
+    public java.lang.Boolean getIsNavigationRequest() {
+        return isNavigationRequest;
+    }
 
-  public Boolean getDownload() {
-    return isDownload;
-  }
+    /**
+     * Set if the request is a navigation that will result in a download.
+     * Only present after response is received from the server (i.e. HeadersReceived stage).
+     */
+    public java.lang.Boolean getIsDownload() {
+        return isDownload;
+    }
 
-  public String getRedirectUrl() {
-    return redirectUrl;
-  }
+    /**
+     * Redirect location, only sent if a redirect was intercepted.
+     */
+    public java.lang.String getRedirectUrl() {
+        return redirectUrl;
+    }
 
-  public AuthChallenge getAuthChallenge() {
-    return authChallenge;
-  }
+    /**
+     * Details of the Authorization Challenge encountered. If this is set then
+     * continueInterceptedRequest must contain an authChallengeResponse.
+     */
+    public org.openqa.selenium.devtools.network.model.AuthChallenge getAuthChallenge() {
+        return authChallenge;
+    }
 
-  public ErrorReason getResponseErrorReason() {
-    return responseErrorReason;
-  }
+    /**
+     * Response error if intercepted at response stage or if redirect occurred while intercepting
+     * request.
+     */
+    public org.openqa.selenium.devtools.network.model.ErrorReason getResponseErrorReason() {
+        return responseErrorReason;
+    }
 
-  public Number getResponseStatusCode() {
-    return responseStatusCode;
-  }
+    /**
+     * Response code if intercepted at response stage or if redirect occurred while intercepting
+     * request or auth retry occurred.
+     */
+    public java.lang.Integer getResponseStatusCode() {
+        return responseStatusCode;
+    }
 
-  public Object getResponseHeaders() {
-    return responseHeaders;
-  }
+    /**
+     * Response headers if intercepted at the response stage or if redirect occurred while
+     * intercepting request or auth retry occurred.
+     */
+    public org.openqa.selenium.devtools.network.model.Headers getResponseHeaders() {
+        return responseHeaders;
+    }
 
-  public String getRequestId() {
-    return requestId;
-  }
+    /**
+     * If the intercepted request had a corresponding requestWillBeSent event fired for it, then
+     * this requestId will be the same as the requestId present in the requestWillBeSent event.
+     */
+    public org.openqa.selenium.devtools.network.model.RequestId getRequestId() {
+        return requestId;
+    }
+
+    private static RequestIntercepted fromJson(JsonInput input) {
+        org.openqa.selenium.devtools.network.model.InterceptionId interceptionId = null;
+        org.openqa.selenium.devtools.network.model.Request request = null;
+        org.openqa.selenium.devtools.page.model.FrameId frameId = null;
+        org.openqa.selenium.devtools.network.model.ResourceType resourceType = null;
+        java.lang.Boolean isNavigationRequest = null;
+        java.lang.Boolean isDownload = null;
+        java.lang.String redirectUrl = null;
+        org.openqa.selenium.devtools.network.model.AuthChallenge authChallenge = null;
+        org.openqa.selenium.devtools.network.model.ErrorReason responseErrorReason = null;
+        java.lang.Integer responseStatusCode = null;
+        org.openqa.selenium.devtools.network.model.Headers responseHeaders = null;
+        org.openqa.selenium.devtools.network.model.RequestId requestId = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "interceptionId":
+                    interceptionId = input.read(org.openqa.selenium.devtools.network.model.InterceptionId.class);
+                    break;
+                case "request":
+                    request = input.read(org.openqa.selenium.devtools.network.model.Request.class);
+                    break;
+                case "frameId":
+                    frameId = input.read(org.openqa.selenium.devtools.page.model.FrameId.class);
+                    break;
+                case "resourceType":
+                    resourceType = input.read(org.openqa.selenium.devtools.network.model.ResourceType.class);
+                    break;
+                case "isNavigationRequest":
+                    isNavigationRequest = input.nextBoolean();
+                    break;
+                case "isDownload":
+                    isDownload = input.nextBoolean();
+                    break;
+                case "redirectUrl":
+                    redirectUrl = input.nextString();
+                    break;
+                case "authChallenge":
+                    authChallenge = input.read(org.openqa.selenium.devtools.network.model.AuthChallenge.class);
+                    break;
+                case "responseErrorReason":
+                    responseErrorReason = input.read(org.openqa.selenium.devtools.network.model.ErrorReason.class);
+                    break;
+                case "responseStatusCode":
+                    responseStatusCode = input.nextNumber().intValue();
+                    break;
+                case "responseHeaders":
+                    responseHeaders = input.read(org.openqa.selenium.devtools.network.model.Headers.class);
+                    break;
+                case "requestId":
+                    requestId = input.read(org.openqa.selenium.devtools.network.model.RequestId.class);
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new RequestIntercepted(interceptionId, request, frameId, resourceType, isNavigationRequest, isDownload, redirectUrl, authChallenge, responseErrorReason, responseStatusCode, responseHeaders, requestId);
+    }
 }

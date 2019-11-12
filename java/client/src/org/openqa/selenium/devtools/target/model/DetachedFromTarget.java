@@ -1,57 +1,57 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
 package org.openqa.selenium.devtools.target.model;
 
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
 
-import java.util.Objects;
-
+/**
+ * Issued when detached from target for any reason (including `detachFromTarget` command). Can be
+ * issued multiple times per target if multiple sessions have been attached to it.
+ */
+@org.openqa.selenium.Beta()
 public class DetachedFromTarget {
 
-  private final SessionID sessionId;
+    private final org.openqa.selenium.devtools.target.model.SessionID sessionId;
 
-  @Deprecated
-  private final TargetID targetId;
+    private final org.openqa.selenium.devtools.target.model.TargetID targetId;
 
-
-  public DetachedFromTarget(
-      SessionID sessionId,
-    TargetID targetId) {
-    this.sessionId = Objects.requireNonNull(sessionId, "sessionId is required");
-    this.targetId = targetId;
-  }
-
-  private static DetachedFromTarget fromJson(JsonInput input) {
-    SessionID sessionId = null;
-    TargetID targetId = null;
-    while (input.hasNext()) {
-      switch (input.nextName()) {
-        case "sessionId":
-          sessionId = input.read(SessionID.class);
-          break;
-        case "targetId":
-          targetId = input.read(TargetID.class);
-          break;
-        default:
-          input.skipValue();
-          break;
-      }
+    public DetachedFromTarget(org.openqa.selenium.devtools.target.model.SessionID sessionId, org.openqa.selenium.devtools.target.model.TargetID targetId) {
+        this.sessionId = java.util.Objects.requireNonNull(sessionId, "sessionId is required");
+        this.targetId = targetId;
     }
-    return new DetachedFromTarget(sessionId, targetId);
-  }
 
+    /**
+     * Detached session identifier.
+     */
+    public org.openqa.selenium.devtools.target.model.SessionID getSessionId() {
+        return sessionId;
+    }
+
+    /**
+     * Deprecated.
+     */
+    @Deprecated()
+    public org.openqa.selenium.devtools.target.model.TargetID getTargetId() {
+        return targetId;
+    }
+
+    private static DetachedFromTarget fromJson(JsonInput input) {
+        org.openqa.selenium.devtools.target.model.SessionID sessionId = null;
+        org.openqa.selenium.devtools.target.model.TargetID targetId = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "sessionId":
+                    sessionId = input.read(org.openqa.selenium.devtools.target.model.SessionID.class);
+                    break;
+                case "targetId":
+                    targetId = input.read(org.openqa.selenium.devtools.target.model.TargetID.class);
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new DetachedFromTarget(sessionId, targetId);
+    }
 }

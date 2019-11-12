@@ -1,146 +1,100 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.profiler.model;
 
-import org.openqa.selenium.devtools.DevToolsException;
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 /**
- * Recorded profile.
+ * Profile.
  */
 public class Profile {
 
-  /**
-   * The list of profile nodes. First item is the root node.
-   */
-  private final List<ProfileNode> nodes;
-  /**
-   * Profiling start timestamp in microseconds.
-   */
-  private final Instant startTime;
-  /**
-   * Profiling end timestamp in microseconds.
-   */
-  private final Instant endTime;
-  /**
-   * Ids of samples top nodes. Optional
-   */
-  private final List<Integer> samples;
-  /**
-   * Time intervals between adjacent samples in microseconds. The first delta is relative to the. profile startTime.
-   * Optional
-   */
-  private final List<Integer> timeDeltas;
+    private final java.util.List<org.openqa.selenium.devtools.profiler.model.ProfileNode> nodes;
 
-  public Profile(List<ProfileNode> nodes, Instant startTime, Instant endTime,
-                 List<Integer> samples, List<Integer> timeDeltas) {
-    validateNodes(nodes);
-    Objects.requireNonNull(startTime, "startTime is require for Profile object");
-    Objects.requireNonNull(endTime, "endTime is require for Profile object");
+    private final java.lang.Number startTime;
 
-    this.nodes = nodes;
-    this.startTime = startTime;
-    this.endTime = endTime;
-    this.samples = samples;
-    this.timeDeltas = timeDeltas;
-  }
+    private final java.lang.Number endTime;
 
-  public List<ProfileNode> getNodes() {
-    return nodes;
-  }
+    private final java.util.List<java.lang.Integer> samples;
 
-  private static Profile fromJson(JsonInput input) {
-    List<ProfileNode> nodes = null;
-    Instant startTime = null;
-    Instant endTime = null;
-    List<Integer> samples = null;
-    List<Integer> timeDeltas = null;
-    input.beginObject();
-    while (input.hasNext()) {
-      switch (input.nextName()) {
-        case "nodes":
-          nodes = new ArrayList<>();
-          input.beginArray();
-          while (input.hasNext()) {
-            nodes.add(input.read(ProfileNode.class));
-          }
-          input.endArray();
-          break;
-        case "startTime":
-          startTime = input.nextInstant();
-          break;
-        case "endTime":
-          endTime = input.nextInstant();
-          break;
-        case "samples":
-          samples = new ArrayList<>();
-          input.beginArray();
-          while (input.hasNext()) {
-            samples.add(input.read(Integer.class));
-          }
-          input.endArray();
-          break;
-        case "timeDeltas":
-          timeDeltas = new ArrayList<>();
-          input.beginArray();
-          while (input.hasNext()) {
-            timeDeltas.add(input.read(Integer.class));
-          }
-          input.endArray();
-          break;
-        default:
-          input.skipValue();
-          break;
-      }
+    private final java.util.List<java.lang.Integer> timeDeltas;
+
+    public Profile(java.util.List<org.openqa.selenium.devtools.profiler.model.ProfileNode> nodes, java.lang.Number startTime, java.lang.Number endTime, java.util.List<java.lang.Integer> samples, java.util.List<java.lang.Integer> timeDeltas) {
+        this.nodes = java.util.Objects.requireNonNull(nodes, "nodes is required");
+        this.startTime = java.util.Objects.requireNonNull(startTime, "startTime is required");
+        this.endTime = java.util.Objects.requireNonNull(endTime, "endTime is required");
+        this.samples = samples;
+        this.timeDeltas = timeDeltas;
     }
-    input.endObject();
-    return new Profile(nodes, startTime, endTime, samples, timeDeltas);
-  }
 
-  private void validateNodes(List<ProfileNode> nodes) {
-    Objects.requireNonNull(nodes, "nodes are require for Profile object");
-    if (nodes.isEmpty()) {
-      throw new DevToolsException("Nodes cannot be Empty Object");
+    /**
+     * The list of profile nodes. First item is the root node.
+     */
+    public java.util.List<org.openqa.selenium.devtools.profiler.model.ProfileNode> getNodes() {
+        return nodes;
     }
-  }
 
-  public Instant getStartTime() {
-    return startTime;
-  }
+    /**
+     * Profiling start timestamp in microseconds.
+     */
+    public java.lang.Number getStartTime() {
+        return startTime;
+    }
 
+    /**
+     * Profiling end timestamp in microseconds.
+     */
+    public java.lang.Number getEndTime() {
+        return endTime;
+    }
 
-  public Instant getEndTime() {
-    return endTime;
-  }
+    /**
+     * Ids of samples top nodes.
+     */
+    public java.util.List<java.lang.Integer> getSamples() {
+        return samples;
+    }
 
+    /**
+     * Time intervals between adjacent samples in microseconds. The first delta is relative to the
+     * profile startTime.
+     */
+    public java.util.List<java.lang.Integer> getTimeDeltas() {
+        return timeDeltas;
+    }
 
-  public List<Integer> getSamples() {
-    return samples;
-  }
-
-  public List<Integer> getTimeDeltas() {
-    return timeDeltas;
-  }
-
-
+    private static Profile fromJson(JsonInput input) {
+        java.util.List<org.openqa.selenium.devtools.profiler.model.ProfileNode> nodes = null;
+        java.lang.Number startTime = null;
+        java.lang.Number endTime = null;
+        java.util.List<java.lang.Integer> samples = null;
+        java.util.List<java.lang.Integer> timeDeltas = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "nodes":
+                    nodes = input.read(new com.google.common.reflect.TypeToken<java.util.List<org.openqa.selenium.devtools.profiler.model.ProfileNode>>() {
+                    }.getType());
+                    break;
+                case "startTime":
+                    startTime = input.nextNumber();
+                    break;
+                case "endTime":
+                    endTime = input.nextNumber();
+                    break;
+                case "samples":
+                    samples = input.read(new com.google.common.reflect.TypeToken<java.util.List<java.lang.Integer>>() {
+                    }.getType());
+                    break;
+                case "timeDeltas":
+                    timeDeltas = input.read(new com.google.common.reflect.TypeToken<java.util.List<java.lang.Integer>>() {
+                    }.getType());
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new Profile(nodes, startTime, endTime, samples, timeDeltas);
+    }
 }

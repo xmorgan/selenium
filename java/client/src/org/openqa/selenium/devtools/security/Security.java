@@ -1,61 +1,74 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
 package org.openqa.selenium.devtools.security;
 
-import static org.openqa.selenium.devtools.ConverterFunctions.map;
-
-import com.google.common.collect.ImmutableMap;
-
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.Event;
-import org.openqa.selenium.devtools.security.model.SecurityStateChanged;
+import org.openqa.selenium.devtools.ConverterFunctions;
+import com.google.common.collect.ImmutableMap;
+import org.openqa.selenium.json.JsonInput;
 
+/**
+ * Security
+ */
 public class Security {
 
-  private final static String DOMAIN_NAME = "Security";
+    /**
+     * Disables tracking security state changes.
+     */
+    public static Command<Void> disable() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Security.disable", params.build());
+    }
 
-  /**
-   * Disables tracking security state changes.
-   */
-  public static Command<Void> disable() {
-    return new Command<>(DOMAIN_NAME + ".disable", ImmutableMap.of());
-  }
+    /**
+     * Enables tracking security state changes.
+     */
+    public static Command<Void> enable() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Security.enable", params.build());
+    }
 
-  /**
-   * Enables tracking security state changes.
-   */
-  public static Command<Void> enable() {
-    return new Command<>(DOMAIN_NAME + ".enable", ImmutableMap.of());
-  }
+    /**
+     * Enable/disable whether all certificate errors should be ignored.
+     */
+    @Beta()
+    public static Command<Void> setIgnoreCertificateErrors(java.lang.Boolean ignore) {
+        java.util.Objects.requireNonNull(ignore, "ignore is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("ignore", ignore);
+        return new Command<>("Security.setIgnoreCertificateErrors", params.build());
+    }
 
-  /**
-   * Enable/disable whether all certificate errors should be ignored. (EXPERIMENTAL)
-   */
-  public static Command<Void> setIgnoreCertificateErrors(boolean ignore) {
-    return new Command<>(DOMAIN_NAME + ".setIgnoreCertificateErrors",
-                         ImmutableMap.of("ignore", ignore));
-  }
+    /**
+     * Handles a certificate error that fired a certificateError event.
+     */
+    @Deprecated()
+    public static Command<Void> handleCertificateError(java.lang.Integer eventId, org.openqa.selenium.devtools.security.model.CertificateErrorAction action) {
+        java.util.Objects.requireNonNull(eventId, "eventId is required");
+        java.util.Objects.requireNonNull(action, "action is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("eventId", eventId);
+        params.put("action", action);
+        return new Command<>("Security.handleCertificateError", params.build());
+    }
 
-  /**
-   * The security state of the page changed.
-   */
-  public static Event<SecurityStateChanged> securityStateChanged() {
-    return new Event<>(DOMAIN_NAME + ".securityStateChanged",
-                       map("securityState", SecurityStateChanged.class));
-  }
+    /**
+     * Enable/disable overriding certificate errors. If enabled, all certificate error events need to
+     * be handled by the DevTools client and should be answered with `handleCertificateError` commands.
+     */
+    @Deprecated()
+    public static Command<Void> setOverrideCertificateErrors(java.lang.Boolean override) {
+        java.util.Objects.requireNonNull(override, "override is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("override", override);
+        return new Command<>("Security.setOverrideCertificateErrors", params.build());
+    }
 
+    public static Event<org.openqa.selenium.devtools.security.model.CertificateError> certificateError() {
+        return new Event<>("Security.certificateError", input -> input.read(org.openqa.selenium.devtools.security.model.CertificateError.class));
+    }
+
+    public static Event<org.openqa.selenium.devtools.security.model.SecurityStateChanged> securityStateChanged() {
+        return new Event<>("Security.securityStateChanged", input -> input.read(org.openqa.selenium.devtools.security.model.SecurityStateChanged.class));
+    }
 }

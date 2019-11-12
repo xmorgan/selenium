@@ -1,71 +1,65 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
 package org.openqa.selenium.devtools.target.model;
 
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
 
-import java.util.Objects;
-
+/**
+ * Issued when a target has crashed.
+ */
 public class TargetCrashed {
 
-  private final TargetID targetId;
+    private final org.openqa.selenium.devtools.target.model.TargetID targetId;
 
-  private final String status;
+    private final java.lang.String status;
 
-  private final int errorCode;
+    private final java.lang.Integer errorCode;
 
-  public TargetCrashed(TargetID targetId, String status, Integer errorCode) {
-    this.targetId = Objects.requireNonNull(targetId, "targetId is required");
-    this.status = Objects.requireNonNull(status, "status is required");
-    this.errorCode = Objects.requireNonNull(errorCode, "errorCode is require");
-  }
-
-  private static TargetCrashed fromJson(JsonInput input) {
-    TargetID targetId = null;
-    String status = null;
-    Integer errorCode = null;
-    while (input.hasNext()) {
-      switch (input.nextName()) {
-        case "targetId":
-          targetId = input.read(TargetID.class);
-          break;
-        case "status":
-          status = input.nextString();
-          break;
-        case "errorCode":
-          errorCode = input.read(Integer.class);
-          break;
-        default:
-          input.skipValue();
-          break;
-      }
+    public TargetCrashed(org.openqa.selenium.devtools.target.model.TargetID targetId, java.lang.String status, java.lang.Integer errorCode) {
+        this.targetId = java.util.Objects.requireNonNull(targetId, "targetId is required");
+        this.status = java.util.Objects.requireNonNull(status, "status is required");
+        this.errorCode = java.util.Objects.requireNonNull(errorCode, "errorCode is required");
     }
-    return new TargetCrashed(targetId, status, errorCode);
-  }
 
-  public TargetID getTargetId() {
-    return targetId;
-  }
+    public org.openqa.selenium.devtools.target.model.TargetID getTargetId() {
+        return targetId;
+    }
 
-  public String getStatus() {
-    return status;
-  }
+    /**
+     * Termination status type.
+     */
+    public java.lang.String getStatus() {
+        return status;
+    }
 
-  public int getErrorCode() {
-    return errorCode;
-  }
+    /**
+     * Termination error code.
+     */
+    public java.lang.Integer getErrorCode() {
+        return errorCode;
+    }
+
+    private static TargetCrashed fromJson(JsonInput input) {
+        org.openqa.selenium.devtools.target.model.TargetID targetId = null;
+        java.lang.String status = null;
+        java.lang.Integer errorCode = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "targetId":
+                    targetId = input.read(org.openqa.selenium.devtools.target.model.TargetID.class);
+                    break;
+                case "status":
+                    status = input.nextString();
+                    break;
+                case "errorCode":
+                    errorCode = input.nextNumber().intValue();
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new TargetCrashed(targetId, status, errorCode);
+    }
 }

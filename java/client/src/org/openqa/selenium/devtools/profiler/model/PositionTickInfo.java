@@ -1,81 +1,54 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.profiler.model;
 
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
-
-import java.util.Objects;
 
 /**
  * Specifies a number of samples attributed to a certain source position.
  */
 public class PositionTickInfo {
 
-  /**
-   * Source line number (1-based).
-   */
-  private final int line;
-  /**
-   * Number of samples attributed to the source line.
-   */
-  private final int ticks;
+    private final java.lang.Integer line;
 
-  public PositionTickInfo(int line, int ticks) {
-    this.line = line;
-    this.ticks = ticks;
-  }
+    private final java.lang.Integer ticks;
 
-  private static PositionTickInfo fromJson(JsonInput input) {
-    int line = input.read(Integer.class);
-    int ticks = 0;
-    while (input.hasNext()) {
-      switch (input.nextName()) {
-        case "ticks":
-          ticks = input.read(Integer.class);
-          break;
-        default:
-          input.skipValue();
-          break;
-      }
-    }
-    return new PositionTickInfo(line, ticks);
-  }
-
-  public int getLine() {
-    return line;
-  }
-
-  public int getTicks() {
-    return ticks;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (null == obj || !(obj instanceof PositionTickInfo)) {
-      return false;
+    public PositionTickInfo(java.lang.Integer line, java.lang.Integer ticks) {
+        this.line = java.util.Objects.requireNonNull(line, "line is required");
+        this.ticks = java.util.Objects.requireNonNull(ticks, "ticks is required");
     }
 
-    return this.getLine() == ((PositionTickInfo) obj).getLine()
-      && this.getTicks() == ((PositionTickInfo) obj).getTicks();
-  }
+    /**
+     * Source line number (1-based).
+     */
+    public java.lang.Integer getLine() {
+        return line;
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(getLine(), getTicks());
-  }
+    /**
+     * Number of samples attributed to the source line.
+     */
+    public java.lang.Integer getTicks() {
+        return ticks;
+    }
+
+    private static PositionTickInfo fromJson(JsonInput input) {
+        java.lang.Integer line = null;
+        java.lang.Integer ticks = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "line":
+                    line = input.nextNumber().intValue();
+                    break;
+                case "ticks":
+                    ticks = input.nextNumber().intValue();
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new PositionTickInfo(line, ticks);
+    }
 }

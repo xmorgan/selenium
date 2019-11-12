@@ -1,139 +1,110 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.network.model;
 
-import static java.util.Objects.requireNonNull;
-
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
 
+/**
+ * Fired when HTTP response is available.
+ */
 public class ResponseReceived {
 
-  /**
-   * Request identifier.
-   */
-  private final RequestId requestId;
+    private final org.openqa.selenium.devtools.network.model.RequestId requestId;
 
-  /**
-   * Loader identifier. Empty string if the request is fetched from worker.
-   */
-  private final LoaderId loaderId;
+    private final org.openqa.selenium.devtools.network.model.LoaderId loaderId;
 
-  /**
-   * TimeStamp
-   */
-  private final MonotonicTime timestamp;
+    private final org.openqa.selenium.devtools.network.model.MonotonicTime timestamp;
 
+    private final org.openqa.selenium.devtools.network.model.ResourceType type;
 
-  /**
-   * Resource Type
-   */
-  private final ResourceType type;
+    private final org.openqa.selenium.devtools.network.model.Response response;
 
-  /**
-   * Response data.
-   */
-  private final Response response;
+    private final org.openqa.selenium.devtools.page.model.FrameId frameId;
 
-  /**
-   * Frame identifier.
-   * Optional
-   */
-  private final String frameId;
-
-  private ResponseReceived(RequestId requestId,
-                           LoaderId loaderId,
-                           MonotonicTime timestamp,
-                           ResourceType type,
-                           Response response, String frameId) {
-    this.requestId = requireNonNull(requestId, "'requestId' is required for ResponseReceived");
-    this.loaderId = requireNonNull(loaderId, "'loaderId' is required for ResponseReceived");
-    this.timestamp = requireNonNull(timestamp, "'timestamp' is required for ResponseReceived");
-    this.type = requireNonNull(type, "'type' is required for ResponseReceived");
-    this.response = requireNonNull(response, "'response' is required for ResponseReceived");
-    this.frameId = frameId;
-
-  }
-
-  private static ResponseReceived fromJson(JsonInput input) {
-    RequestId requestId = new RequestId(input.nextString());
-    LoaderId loaderId = null;
-    MonotonicTime timestamp = null;
-    ResourceType type = null;
-    Response response = null;
-    String frameId = null;
-    while (input.hasNext()) {
-      switch (input.nextName()) {
-        case "loaderId":
-          loaderId = new LoaderId(input.nextString());
-          break;
-        case "timestamp":
-          timestamp = MonotonicTime.parse(input.nextNumber());
-          break;
-        case "response":
-          response = input.read(Response.class);
-          break;
-        case "type":
-          type = ResourceType.fromString(input.nextString());
-          break;
-        case "frameId":
-          frameId = input.nextString();
-          break;
-        default:
-          input.skipValue();
-          break;
-      }
+    public ResponseReceived(org.openqa.selenium.devtools.network.model.RequestId requestId, org.openqa.selenium.devtools.network.model.LoaderId loaderId, org.openqa.selenium.devtools.network.model.MonotonicTime timestamp, org.openqa.selenium.devtools.network.model.ResourceType type, org.openqa.selenium.devtools.network.model.Response response, org.openqa.selenium.devtools.page.model.FrameId frameId) {
+        this.requestId = java.util.Objects.requireNonNull(requestId, "requestId is required");
+        this.loaderId = java.util.Objects.requireNonNull(loaderId, "loaderId is required");
+        this.timestamp = java.util.Objects.requireNonNull(timestamp, "timestamp is required");
+        this.type = java.util.Objects.requireNonNull(type, "type is required");
+        this.response = java.util.Objects.requireNonNull(response, "response is required");
+        this.frameId = frameId;
     }
-    return new ResponseReceived(requestId, loaderId, timestamp, type, response, frameId);
-  }
 
-  public RequestId getRequestId() {
-    return requestId;
-  }
+    /**
+     * Request identifier.
+     */
+    public org.openqa.selenium.devtools.network.model.RequestId getRequestId() {
+        return requestId;
+    }
 
-  public LoaderId getLoaderId() {
-    return loaderId;
-  }
+    /**
+     * Loader identifier. Empty string if the request is fetched from worker.
+     */
+    public org.openqa.selenium.devtools.network.model.LoaderId getLoaderId() {
+        return loaderId;
+    }
 
-  public MonotonicTime getTimestamp() {
-    return timestamp;
-  }
+    /**
+     * Timestamp.
+     */
+    public org.openqa.selenium.devtools.network.model.MonotonicTime getTimestamp() {
+        return timestamp;
+    }
 
-  public ResourceType getType() {
-    return type;
-  }
+    /**
+     * Resource type.
+     */
+    public org.openqa.selenium.devtools.network.model.ResourceType getType() {
+        return type;
+    }
 
-  public Response getResponse() {
-    return response;
-  }
+    /**
+     * Response data.
+     */
+    public org.openqa.selenium.devtools.network.model.Response getResponse() {
+        return response;
+    }
 
-  public String getFrameId() {
-    return frameId;
-  }
+    /**
+     * Frame identifier.
+     */
+    public org.openqa.selenium.devtools.page.model.FrameId getFrameId() {
+        return frameId;
+    }
 
-  @Override
-  public String toString() {
-    return "ResponseReceived{" +
-           "requestId=" + requestId +
-           ", loaderId=" + loaderId +
-           ", timestamp=" + timestamp.getTimeStamp().toString() +
-           ", type=" + type +
-           ", response=" + response +
-           ", frameId='" + frameId + '\'' +
-           '}';
-  }
+    private static ResponseReceived fromJson(JsonInput input) {
+        org.openqa.selenium.devtools.network.model.RequestId requestId = null;
+        org.openqa.selenium.devtools.network.model.LoaderId loaderId = null;
+        org.openqa.selenium.devtools.network.model.MonotonicTime timestamp = null;
+        org.openqa.selenium.devtools.network.model.ResourceType type = null;
+        org.openqa.selenium.devtools.network.model.Response response = null;
+        org.openqa.selenium.devtools.page.model.FrameId frameId = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "requestId":
+                    requestId = input.read(org.openqa.selenium.devtools.network.model.RequestId.class);
+                    break;
+                case "loaderId":
+                    loaderId = input.read(org.openqa.selenium.devtools.network.model.LoaderId.class);
+                    break;
+                case "timestamp":
+                    timestamp = input.read(org.openqa.selenium.devtools.network.model.MonotonicTime.class);
+                    break;
+                case "type":
+                    type = input.read(org.openqa.selenium.devtools.network.model.ResourceType.class);
+                    break;
+                case "response":
+                    response = input.read(org.openqa.selenium.devtools.network.model.Response.class);
+                    break;
+                case "frameId":
+                    frameId = input.read(org.openqa.selenium.devtools.page.model.FrameId.class);
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new ResponseReceived(requestId, loaderId, timestamp, type, response, frameId);
+    }
 }

@@ -1,46 +1,44 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.console;
 
-import static org.openqa.selenium.devtools.ConverterFunctions.map;
-
-import com.google.common.collect.ImmutableMap;
-
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.Event;
-import org.openqa.selenium.devtools.console.model.ConsoleMessage;
+import org.openqa.selenium.devtools.ConverterFunctions;
+import com.google.common.collect.ImmutableMap;
+import org.openqa.selenium.json.JsonInput;
 
+/**
+ * This domain is deprecated - use Runtime or Log instead.
+ */
+@Deprecated()
 public class Console {
 
-  private final static String DOMAIN_NAME = "Console";
+    /**
+     * Does nothing.
+     */
+    public static Command<Void> clearMessages() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Console.clearMessages", params.build());
+    }
 
-  public static Command<Void> enable() {
-    return new Command<>(DOMAIN_NAME + ".enable", ImmutableMap.of());
-  }
+    /**
+     * Disables console domain, prevents further console messages from being reported to the client.
+     */
+    public static Command<Void> disable() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Console.disable", params.build());
+    }
 
-  public static Command<Void> disable() {
-    return new Command<>(DOMAIN_NAME + ".disable", ImmutableMap.of());
-  }
+    /**
+     * Enables console domain, sends the messages collected so far to the client by means of the
+     * `messageAdded` notification.
+     */
+    public static Command<Void> enable() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Console.enable", params.build());
+    }
 
-  public static Event<ConsoleMessage> messageAdded() {
-    return new Event<>(
-        DOMAIN_NAME + ".messageAdded",
-        map("message", ConsoleMessage.class));
-  }
-
+    public static Event<org.openqa.selenium.devtools.console.model.ConsoleMessage> messageAdded() {
+        return new Event<>("Console.messageAdded", ConverterFunctions.map("message", org.openqa.selenium.devtools.console.model.ConsoleMessage.class));
+    }
 }

@@ -1,104 +1,100 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
 package org.openqa.selenium.devtools.security.model;
 
-import static java.util.Objects.requireNonNull;
-
-import com.google.common.reflect.TypeToken;
-
-import org.openqa.selenium.devtools.network.model.SecurityState;
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
 
-import java.util.List;
-
+/**
+ * The security state of the page changed.
+ */
 public class SecurityStateChanged {
 
-  /**
-   * Security state
-   */
-  private SecurityState securityState;
+    private final org.openqa.selenium.devtools.security.model.SecurityState securityState;
 
-  /**
-   * True if the page was loaded over cryptographic transport such as HTTPS.
-   */
-  private boolean schemeIsCryptographic;
+    private final java.lang.Boolean schemeIsCryptographic;
 
-  /**
-   * List of explanations for the security state.
-   * If the overall security state is insecure or warning, at least one corresponding
-   * explanation should be included.
-   */
-  private List<SecurityStateExplanation> securityStateExplanations;
+    private final java.util.List<org.openqa.selenium.devtools.security.model.SecurityStateExplanation> explanations;
 
-  /**
-   * Overrides user-visible description of the state.
-   */
-  private String summary;
+    private final org.openqa.selenium.devtools.security.model.InsecureContentStatus insecureContentStatus;
 
-  private SecurityStateChanged(SecurityState securityState, boolean schemeIsCryptographic,
-                               List<SecurityStateExplanation> securityStateExplanations,
-                               String summary) {
-    this.securityState =
-        requireNonNull(securityState, "'securityState' is required for SecurityStateChanged");
-    this.schemeIsCryptographic = schemeIsCryptographic;
-    this.securityStateExplanations = securityStateExplanations;
-    this.summary = summary;
-  }
+    private final java.lang.String summary;
 
-  private static SecurityStateChanged fromJson(JsonInput input) {
-    SecurityState securityState = SecurityState.valueOf(input.nextString());
-    boolean schemeIsCryptographic = false;
-    List<SecurityStateExplanation> securityStateExplanations = null;
-    String summary = null;
-    while (input.hasNext()) {
-      switch (input.nextName()) {
-        case "schemeIsCryptographic":
-          schemeIsCryptographic = input.nextBoolean();
-          break;
-        case "securityStateExplanations":
-          securityStateExplanations = input.read(new TypeToken<List<SecurityStateExplanation>>() {
-          }.getType());
-          break;
-        case "summary":
-          summary = input.nextString();
-          break;
-        default:
-          input.skipValue();
-          break;
-      }
+    public SecurityStateChanged(org.openqa.selenium.devtools.security.model.SecurityState securityState, java.lang.Boolean schemeIsCryptographic, java.util.List<org.openqa.selenium.devtools.security.model.SecurityStateExplanation> explanations, org.openqa.selenium.devtools.security.model.InsecureContentStatus insecureContentStatus, java.lang.String summary) {
+        this.securityState = java.util.Objects.requireNonNull(securityState, "securityState is required");
+        this.schemeIsCryptographic = java.util.Objects.requireNonNull(schemeIsCryptographic, "schemeIsCryptographic is required");
+        this.explanations = java.util.Objects.requireNonNull(explanations, "explanations is required");
+        this.insecureContentStatus = java.util.Objects.requireNonNull(insecureContentStatus, "insecureContentStatus is required");
+        this.summary = summary;
     }
-    return new SecurityStateChanged(securityState, schemeIsCryptographic, securityStateExplanations,
-                                    summary);
-  }
 
-  public SecurityState getSecurityState() {
-    return securityState;
-  }
+    /**
+     * Security state.
+     */
+    public org.openqa.selenium.devtools.security.model.SecurityState getSecurityState() {
+        return securityState;
+    }
 
-  public boolean isSchemeIsCryptographic() {
-    return schemeIsCryptographic;
-  }
+    /**
+     * True if the page was loaded over cryptographic transport such as HTTPS.
+     */
+    @Deprecated()
+    public java.lang.Boolean getSchemeIsCryptographic() {
+        return schemeIsCryptographic;
+    }
 
-  public List<SecurityStateExplanation> getSecurityStateExplanations() {
-    return securityStateExplanations;
-  }
+    /**
+     * List of explanations for the security state. If the overall security state is `insecure` or
+     * `warning`, at least one corresponding explanation should be included.
+     */
+    public java.util.List<org.openqa.selenium.devtools.security.model.SecurityStateExplanation> getExplanations() {
+        return explanations;
+    }
 
-  public String getSummary() {
-    return summary;
-  }
+    /**
+     * Information about insecure content on the page.
+     */
+    @Deprecated()
+    public org.openqa.selenium.devtools.security.model.InsecureContentStatus getInsecureContentStatus() {
+        return insecureContentStatus;
+    }
 
+    /**
+     * Overrides user-visible description of the state.
+     */
+    public java.lang.String getSummary() {
+        return summary;
+    }
+
+    private static SecurityStateChanged fromJson(JsonInput input) {
+        org.openqa.selenium.devtools.security.model.SecurityState securityState = null;
+        java.lang.Boolean schemeIsCryptographic = null;
+        java.util.List<org.openqa.selenium.devtools.security.model.SecurityStateExplanation> explanations = null;
+        org.openqa.selenium.devtools.security.model.InsecureContentStatus insecureContentStatus = null;
+        java.lang.String summary = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "securityState":
+                    securityState = input.read(org.openqa.selenium.devtools.security.model.SecurityState.class);
+                    break;
+                case "schemeIsCryptographic":
+                    schemeIsCryptographic = input.nextBoolean();
+                    break;
+                case "explanations":
+                    explanations = input.read(new com.google.common.reflect.TypeToken<java.util.List<org.openqa.selenium.devtools.security.model.SecurityStateExplanation>>() {
+                    }.getType());
+                    break;
+                case "insecureContentStatus":
+                    insecureContentStatus = input.read(org.openqa.selenium.devtools.security.model.InsecureContentStatus.class);
+                    break;
+                case "summary":
+                    summary = input.nextString();
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new SecurityStateChanged(securityState, schemeIsCryptographic, explanations, insecureContentStatus, summary);
+    }
 }

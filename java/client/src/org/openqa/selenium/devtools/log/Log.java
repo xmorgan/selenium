@@ -1,50 +1,61 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.log;
 
-import static org.openqa.selenium.devtools.ConverterFunctions.map;
-
-import com.google.common.collect.ImmutableMap;
-
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.Event;
-import org.openqa.selenium.devtools.log.model.LogEntry;
+import org.openqa.selenium.devtools.ConverterFunctions;
+import com.google.common.collect.ImmutableMap;
+import org.openqa.selenium.json.JsonInput;
 
+/**
+ * Provides access to log entries.
+ */
 public class Log {
 
-  private final static String DOMAIN_NAME = "Log";
+    /**
+     * Clears the log.
+     */
+    public static Command<Void> clear() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Log.clear", params.build());
+    }
 
-  public static Command<Void> clear() {
-    return new Command<>(DOMAIN_NAME + ".clear", ImmutableMap.of());
-  }
+    /**
+     * Disables log domain, prevents further log entries from being reported to the client.
+     */
+    public static Command<Void> disable() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Log.disable", params.build());
+    }
 
-  public static Command<Void> enable() {
-    return new Command<>(DOMAIN_NAME + ".enable", ImmutableMap.of());
-  }
+    /**
+     * Enables log domain, sends the entries collected so far to the client by means of the
+     * `entryAdded` notification.
+     */
+    public static Command<Void> enable() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Log.enable", params.build());
+    }
 
-  public static Command<Void> disable() {
-    return new Command<>(DOMAIN_NAME + ".disable", ImmutableMap.of());
-  }
+    /**
+     * start violation reporting.
+     */
+    public static Command<Void> startViolationsReport(java.util.List<org.openqa.selenium.devtools.log.model.ViolationSetting> config) {
+        java.util.Objects.requireNonNull(config, "config is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("config", config);
+        return new Command<>("Log.startViolationsReport", params.build());
+    }
 
-  public static Event<LogEntry> entryAdded() {
-    return new Event<>(
-        DOMAIN_NAME + ".entryAdded",
-        map("entry", LogEntry.class));
-  }
+    /**
+     * Stop violation reporting.
+     */
+    public static Command<Void> stopViolationsReport() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Log.stopViolationsReport", params.build());
+    }
 
+    public static Event<org.openqa.selenium.devtools.log.model.LogEntry> entryAdded() {
+        return new Event<>("Log.entryAdded", ConverterFunctions.map("entry", org.openqa.selenium.devtools.log.model.LogEntry.class));
+    }
 }

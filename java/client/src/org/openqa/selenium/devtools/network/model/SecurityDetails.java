@@ -1,367 +1,210 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.network.model;
 
-import static java.util.Objects.requireNonNull;
-
-import com.google.common.reflect.TypeToken;
-
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Security details about a request
+ * Security details about a request.
  */
 public class SecurityDetails {
 
-  private String protocol;
+    private final java.lang.String protocol;
 
-  private String keyExchange;
+    private final java.lang.String keyExchange;
 
-  private String keyExchangeGroup;
+    private final java.lang.String keyExchangeGroup;
 
-  private String cipher;
+    private final java.lang.String cipher;
 
-  private String mac;
+    private final java.lang.String mac;
 
-  private Integer certificateId;
+    private final org.openqa.selenium.devtools.security.model.CertificateId certificateId;
 
-  private String subjectName;
+    private final java.lang.String subjectName;
 
-  private List<String> sanList;
+    private final java.util.List<java.lang.String> sanList;
 
-  private String issuer;
+    private final java.lang.String issuer;
 
-  private Double validFrom;
+    private final org.openqa.selenium.devtools.network.model.TimeSinceEpoch validFrom;
 
-  private Double validTo;
+    private final org.openqa.selenium.devtools.network.model.TimeSinceEpoch validTo;
 
-  private List<SignedCertificateTimestamp> signedCertificateTimestampList;
+    private final java.util.List<org.openqa.selenium.devtools.network.model.SignedCertificateTimestamp> signedCertificateTimestampList;
 
-  private CertificateTransparencyCompliance certificateTransparencyCompliance;
+    private final org.openqa.selenium.devtools.network.model.CertificateTransparencyCompliance certificateTransparencyCompliance;
 
-  private SecurityDetails(String protocol, String keyExchange, String keyExchangeGroup,
-                          String cipher, String mac, Integer certificateId,
-                          String subjectName, List<String> sanList, String issuer,
-                          Double validFrom, Double validTo,
-                          List<SignedCertificateTimestamp> signedCertificateTimestampList,
-                          CertificateTransparencyCompliance certificateTransparencyCompliance) {
-    this.protocol = requireNonNull(protocol, "'protocol' is required for SecurityDetails");
-    this.keyExchange = requireNonNull(keyExchange, "'keyExchange' is required for SecurityDetails");
-    this.keyExchangeGroup = keyExchangeGroup;
-    this.cipher = requireNonNull(cipher, "'cipher' is required for SecurityDetails");
-    this.mac = mac;
-    this.certificateId =
-        requireNonNull(certificateId, "'certificateId' is required for SecurityDetails");
-    this.subjectName = requireNonNull(subjectName, "'subjectName' is required for SecurityDetails");
-    this.sanList = requireNonNull(sanList, "'sanList' is required for SecurityDetails");
-    this.issuer = requireNonNull(issuer, "'issuer' is required for SecurityDetails");
-    this.validFrom = requireNonNull(validFrom, "'validFrom' is required for SecurityDetails");
-    this.validTo = requireNonNull(validTo, "'validTo' is required for SecurityDetails");
-    this.signedCertificateTimestampList =
-        requireNonNull(signedCertificateTimestampList,
-                       "'signedCertificateTimestampList' is required for SecurityDetails");
-    this.certificateTransparencyCompliance =
-        requireNonNull(certificateTransparencyCompliance,
-                       "'certificateTransparencyCompliance' is required for SecurityDetails");
-  }
-
-  /**
-   * Protocol name (e.g. "TLS 1.2" or "QUIC").
-   */
-  public String getProtocol() {
-    return protocol;
-  }
-
-  /**
-   * Protocol name (e.g. "TLS 1.2" or "QUIC").
-   */
-  public void setProtocol(String protocol) {
-    this.protocol = protocol;
-  }
-
-  /**
-   * Key Exchange used by the connection, or the empty string if not applicable.
-   */
-  public String getKeyExchange() {
-    return keyExchange;
-  }
-
-  /**
-   * Key Exchange used by the connection, or the empty string if not applicable.
-   */
-  public void setKeyExchange(String keyExchange) {
-    this.keyExchange = keyExchange;
-  }
-
-  /**
-   * (EC)DH group used by the connection, if applicable.
-   */
-  public String getKeyExchangeGroup() {
-    return keyExchangeGroup;
-  }
-
-  /**
-   * (EC)DH group used by the connection, if applicable.
-   */
-  public void setKeyExchangeGroup(String keyExchangeGroup) {
-    this.keyExchangeGroup = keyExchangeGroup;
-  }
-
-  /**
-   * Cipher name.
-   */
-  public String getCipher() {
-    return cipher;
-  }
-
-  /**
-   * Cipher name.
-   */
-  public void setCipher(String cipher) {
-    this.cipher = cipher;
-  }
-
-  /**
-   * TLS MAC. Note that AEAD ciphers do not have separate MACs.
-   */
-  public String getMac() {
-    return mac;
-  }
-
-  /**
-   * TLS MAC. Note that AEAD ciphers do not have separate MACs.
-   */
-  public void setMac(String mac) {
-    this.mac = mac;
-  }
-
-  /**
-   * Certificate ID value.
-   */
-  public Integer getCertificateId() {
-    return certificateId;
-  }
-
-  /**
-   * Certificate ID value.
-   */
-  public void setCertificateId(Integer certificateId) {
-    this.certificateId = certificateId;
-  }
-
-  /**
-   * Certificate subject name.
-   */
-  public String getSubjectName() {
-    return subjectName;
-  }
-
-  /**
-   * Certificate subject name.
-   */
-  public void setSubjectName(String subjectName) {
-    this.subjectName = subjectName;
-  }
-
-  /**
-   * Subject Alternative Name (SAN) DNS names and IP addresses.
-   */
-  public List<String> getSanList() {
-    return sanList;
-  }
-
-  /**
-   * Subject Alternative Name (SAN) DNS names and IP addresses.
-   */
-  public void setSanList(List<String> sanList) {
-    this.sanList = sanList;
-  }
-
-  /**
-   * Name of the issuing CA.
-   */
-  public String getIssuer() {
-    return issuer;
-  }
-
-  /**
-   * Name of the issuing CA.
-   */
-  public void setIssuer(String issuer) {
-    this.issuer = issuer;
-  }
-
-  /**
-   * Certificate valid from date.
-   */
-  public Double getValidFrom() {
-    return validFrom;
-  }
-
-  /**
-   * Certificate valid from date.
-   */
-  public void setValidFrom(Double validFrom) {
-    this.validFrom = validFrom;
-  }
-
-  /**
-   * Certificate valid to (expiration) date
-   */
-  public Double getValidTo() {
-    return validTo;
-  }
-
-  /**
-   * Certificate valid to (expiration) date
-   */
-  public void setValidTo(Double validTo) {
-    this.validTo = validTo;
-  }
-
-  /**
-   * List of signed certificate timestamps (SCTs).
-   */
-  public List<SignedCertificateTimestamp> getSignedCertificateTimestampList() {
-    return signedCertificateTimestampList;
-  }
-
-  /**
-   * List of signed certificate timestamps (SCTs).
-   */
-  public void setSignedCertificateTimestampList(
-      List<SignedCertificateTimestamp> signedCertificateTimestampList) {
-    this.signedCertificateTimestampList = signedCertificateTimestampList;
-  }
-
-  /**
-   * Whether the request complied with Certificate Transparency policy
-   */
-  public CertificateTransparencyCompliance getCertificateTransparencyCompliance() {
-    return certificateTransparencyCompliance;
-  }
-
-  /**
-   * Whether the request complied with Certificate Transparency policy
-   */
-  public void setCertificateTransparencyCompliance(
-      CertificateTransparencyCompliance certificateTransparencyCompliance) {
-    this.certificateTransparencyCompliance = certificateTransparencyCompliance;
-  }
-
-  private static SecurityDetails fromJson(JsonInput input) {
-
-    SecurityDetails securityDetails = null;
-
-    String protocol = null;
-
-    String keyExchange = null;
-
-    String keyExchangeGroup = null;
-
-    String cipher = null;
-
-    String mac = null;
-
-    Number certificateId = null;
-
-    String subjectName = null;
-
-    List<String> sanList = null;
-
-    String issuer = null;
-
-    Number validFrom = null;
-
-    Number validTo = null;
-
-    List<SignedCertificateTimestamp> signedCertificateTimestampList = null;
-
-    CertificateTransparencyCompliance certificateTransparencyCompliance = null;
-
-    input.beginObject();
-
-    while (input.hasNext()) {
-
-      switch (input.nextName()) {
-        case "protocol":
-          protocol = input.nextString();
-          break;
-        case "keyExchange":
-          keyExchange = input.nextString();
-          break;
-        case "keyExchangeGroup":
-          keyExchangeGroup = input.nextString();
-          break;
-        case "cipher":
-          cipher = input.nextString();
-          break;
-        case "mac":
-          mac = input.nextString();
-          break;
-        case "certificateId":
-          certificateId = input.nextNumber();
-          break;
-        case "subjectName":
-          subjectName = input.nextString();
-          break;
-        case "sanList":
-          input.beginArray();
-          sanList = new ArrayList<>();
-          while (input.hasNext()) {
-            sanList.add(input.nextString());
-          }
-          input.endArray();
-          break;
-        case "issuer":
-          issuer = input.nextString();
-          break;
-        case "validFrom":
-          validFrom = input.nextNumber();
-          break;
-        case "validTo":
-          validTo = input.nextNumber();
-          break;
-        case "signedCertificateTimestampList":
-          signedCertificateTimestampList =
-              input.read(new TypeToken<List<SignedCertificateTimestamp>>() {
-              }.getType());
-          break;
-        case "certificateTransparencyCompliance":
-          certificateTransparencyCompliance =
-              CertificateTransparencyCompliance.fromString(input.nextString());
-          break;
-        default:
-          input.skipValue();
-          break;
-      }
-
+    public SecurityDetails(java.lang.String protocol, java.lang.String keyExchange, java.lang.String keyExchangeGroup, java.lang.String cipher, java.lang.String mac, org.openqa.selenium.devtools.security.model.CertificateId certificateId, java.lang.String subjectName, java.util.List<java.lang.String> sanList, java.lang.String issuer, org.openqa.selenium.devtools.network.model.TimeSinceEpoch validFrom, org.openqa.selenium.devtools.network.model.TimeSinceEpoch validTo, java.util.List<org.openqa.selenium.devtools.network.model.SignedCertificateTimestamp> signedCertificateTimestampList, org.openqa.selenium.devtools.network.model.CertificateTransparencyCompliance certificateTransparencyCompliance) {
+        this.protocol = java.util.Objects.requireNonNull(protocol, "protocol is required");
+        this.keyExchange = java.util.Objects.requireNonNull(keyExchange, "keyExchange is required");
+        this.keyExchangeGroup = keyExchangeGroup;
+        this.cipher = java.util.Objects.requireNonNull(cipher, "cipher is required");
+        this.mac = mac;
+        this.certificateId = java.util.Objects.requireNonNull(certificateId, "certificateId is required");
+        this.subjectName = java.util.Objects.requireNonNull(subjectName, "subjectName is required");
+        this.sanList = java.util.Objects.requireNonNull(sanList, "sanList is required");
+        this.issuer = java.util.Objects.requireNonNull(issuer, "issuer is required");
+        this.validFrom = java.util.Objects.requireNonNull(validFrom, "validFrom is required");
+        this.validTo = java.util.Objects.requireNonNull(validTo, "validTo is required");
+        this.signedCertificateTimestampList = java.util.Objects.requireNonNull(signedCertificateTimestampList, "signedCertificateTimestampList is required");
+        this.certificateTransparencyCompliance = java.util.Objects.requireNonNull(certificateTransparencyCompliance, "certificateTransparencyCompliance is required");
     }
 
-    return new SecurityDetails(protocol, keyExchange, keyExchangeGroup, cipher, mac,
-                               Integer.valueOf(String.valueOf(certificateId)), subjectName, sanList,
-                               issuer,
-                               validFrom != null ? Double.valueOf(String.valueOf(validFrom)) : null,
-                               validTo != null ? Double.valueOf(String.valueOf(validTo)) : null,
-                               signedCertificateTimestampList, certificateTransparencyCompliance);
-  }
+    /**
+     * Protocol name (e.g. "TLS 1.2" or "QUIC").
+     */
+    public java.lang.String getProtocol() {
+        return protocol;
+    }
 
+    /**
+     * Key Exchange used by the connection, or the empty string if not applicable.
+     */
+    public java.lang.String getKeyExchange() {
+        return keyExchange;
+    }
+
+    /**
+     * (EC)DH group used by the connection, if applicable.
+     */
+    public java.lang.String getKeyExchangeGroup() {
+        return keyExchangeGroup;
+    }
+
+    /**
+     * Cipher name.
+     */
+    public java.lang.String getCipher() {
+        return cipher;
+    }
+
+    /**
+     * TLS MAC. Note that AEAD ciphers do not have separate MACs.
+     */
+    public java.lang.String getMac() {
+        return mac;
+    }
+
+    /**
+     * Certificate ID value.
+     */
+    public org.openqa.selenium.devtools.security.model.CertificateId getCertificateId() {
+        return certificateId;
+    }
+
+    /**
+     * Certificate subject name.
+     */
+    public java.lang.String getSubjectName() {
+        return subjectName;
+    }
+
+    /**
+     * Subject Alternative Name (SAN) DNS names and IP addresses.
+     */
+    public java.util.List<java.lang.String> getSanList() {
+        return sanList;
+    }
+
+    /**
+     * Name of the issuing CA.
+     */
+    public java.lang.String getIssuer() {
+        return issuer;
+    }
+
+    /**
+     * Certificate valid from date.
+     */
+    public org.openqa.selenium.devtools.network.model.TimeSinceEpoch getValidFrom() {
+        return validFrom;
+    }
+
+    /**
+     * Certificate valid to (expiration) date
+     */
+    public org.openqa.selenium.devtools.network.model.TimeSinceEpoch getValidTo() {
+        return validTo;
+    }
+
+    /**
+     * List of signed certificate timestamps (SCTs).
+     */
+    public java.util.List<org.openqa.selenium.devtools.network.model.SignedCertificateTimestamp> getSignedCertificateTimestampList() {
+        return signedCertificateTimestampList;
+    }
+
+    /**
+     * Whether the request complied with Certificate Transparency policy
+     */
+    public org.openqa.selenium.devtools.network.model.CertificateTransparencyCompliance getCertificateTransparencyCompliance() {
+        return certificateTransparencyCompliance;
+    }
+
+    private static SecurityDetails fromJson(JsonInput input) {
+        java.lang.String protocol = null;
+        java.lang.String keyExchange = null;
+        java.lang.String keyExchangeGroup = null;
+        java.lang.String cipher = null;
+        java.lang.String mac = null;
+        org.openqa.selenium.devtools.security.model.CertificateId certificateId = null;
+        java.lang.String subjectName = null;
+        java.util.List<java.lang.String> sanList = null;
+        java.lang.String issuer = null;
+        org.openqa.selenium.devtools.network.model.TimeSinceEpoch validFrom = null;
+        org.openqa.selenium.devtools.network.model.TimeSinceEpoch validTo = null;
+        java.util.List<org.openqa.selenium.devtools.network.model.SignedCertificateTimestamp> signedCertificateTimestampList = null;
+        org.openqa.selenium.devtools.network.model.CertificateTransparencyCompliance certificateTransparencyCompliance = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "protocol":
+                    protocol = input.nextString();
+                    break;
+                case "keyExchange":
+                    keyExchange = input.nextString();
+                    break;
+                case "keyExchangeGroup":
+                    keyExchangeGroup = input.nextString();
+                    break;
+                case "cipher":
+                    cipher = input.nextString();
+                    break;
+                case "mac":
+                    mac = input.nextString();
+                    break;
+                case "certificateId":
+                    certificateId = input.read(org.openqa.selenium.devtools.security.model.CertificateId.class);
+                    break;
+                case "subjectName":
+                    subjectName = input.nextString();
+                    break;
+                case "sanList":
+                    sanList = input.read(new com.google.common.reflect.TypeToken<java.util.List<java.lang.String>>() {
+                    }.getType());
+                    break;
+                case "issuer":
+                    issuer = input.nextString();
+                    break;
+                case "validFrom":
+                    validFrom = input.read(org.openqa.selenium.devtools.network.model.TimeSinceEpoch.class);
+                    break;
+                case "validTo":
+                    validTo = input.read(org.openqa.selenium.devtools.network.model.TimeSinceEpoch.class);
+                    break;
+                case "signedCertificateTimestampList":
+                    signedCertificateTimestampList = input.read(new com.google.common.reflect.TypeToken<java.util.List<org.openqa.selenium.devtools.network.model.SignedCertificateTimestamp>>() {
+                    }.getType());
+                    break;
+                case "certificateTransparencyCompliance":
+                    certificateTransparencyCompliance = input.read(org.openqa.selenium.devtools.network.model.CertificateTransparencyCompliance.class);
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new SecurityDetails(protocol, keyExchange, keyExchangeGroup, cipher, mac, certificateId, subjectName, sanList, issuer, validFrom, validTo, signedCertificateTimestampList, certificateTransparencyCompliance);
+    }
 }

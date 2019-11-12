@@ -1,142 +1,107 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
 package org.openqa.selenium.devtools.target.model;
 
-import com.google.common.collect.ImmutableMap;
-
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
-
-import java.util.Map;
-import java.util.Objects;
-import java.util.StringJoiner;
 
 public class TargetInfo {
 
-  private final TargetID targetId;
-  private final String type;
-  private final String title;
-  private final String url;
-  private final boolean attached;
+    private final org.openqa.selenium.devtools.target.model.TargetID targetId;
 
-  public TargetInfo(TargetID id, String type, String title, String url, boolean attached) {
-    this.targetId = Objects.requireNonNull(id);
-    this.type = Objects.requireNonNull(type);
-    this.title = Objects.requireNonNull(title);
-    this.url = Objects.requireNonNull(url);
-    this.attached = attached;
-  }
+    private final java.lang.String type;
 
-  private static TargetInfo fromJson(JsonInput input) {
-    TargetID id = null;
-    String type = null;
-    String title = null;
-    String url = null;
-    boolean attached = false;
+    private final java.lang.String title;
 
-    input.beginObject();
-    while (input.hasNext()) {
-      switch (input.nextName()) {
-        case "attached":
-          attached = input.nextBoolean();
-          break;
+    private final java.lang.String url;
 
-        case "targetId":
-          id = input.read(TargetID.class);
-          break;
+    private final java.lang.Boolean attached;
 
-        case "title":
-          title = input.nextString();
-          break;
+    private final org.openqa.selenium.devtools.target.model.TargetID openerId;
 
-        case "type":
-          type = input.nextString();
-          break;
+    private final org.openqa.selenium.devtools.target.model.BrowserContextID browserContextId;
 
-        case "url":
-          url = input.nextString();
-          break;
-
-        default:
-          input.skipValue();
-          break;
-      }
+    public TargetInfo(org.openqa.selenium.devtools.target.model.TargetID targetId, java.lang.String type, java.lang.String title, java.lang.String url, java.lang.Boolean attached, org.openqa.selenium.devtools.target.model.TargetID openerId, org.openqa.selenium.devtools.target.model.BrowserContextID browserContextId) {
+        this.targetId = java.util.Objects.requireNonNull(targetId, "targetId is required");
+        this.type = java.util.Objects.requireNonNull(type, "type is required");
+        this.title = java.util.Objects.requireNonNull(title, "title is required");
+        this.url = java.util.Objects.requireNonNull(url, "url is required");
+        this.attached = java.util.Objects.requireNonNull(attached, "attached is required");
+        this.openerId = openerId;
+        this.browserContextId = browserContextId;
     }
 
-    input.endObject();
-
-    return new TargetInfo(id, type, title, url, attached);
-  }
-
-  public TargetID getTargetId() {
-    return targetId;
-  }
-
-  public String getType() {
-    return type;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public String getUrl() {
-    return url;
-  }
-
-  public boolean isAttached() {
-    return attached;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (!(o instanceof TargetInfo)) {
-      return false;
+    public org.openqa.selenium.devtools.target.model.TargetID getTargetId() {
+        return targetId;
     }
 
-    TargetInfo that = (TargetInfo) o;
-    return this.attached == that.attached &&
-           this.targetId.equals(that.targetId) &&
-           this.type.equals(that.type) &&
-           this.title.equals(that.title) &&
-           this.url.equals(that.url);
-  }
+    public java.lang.String getType() {
+        return type;
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(targetId, type, title, url, attached);
-  }
+    public java.lang.String getTitle() {
+        return title;
+    }
 
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", TargetInfo.class.getSimpleName() + "[", "]")
-        .add("targetId=" + targetId)
-        .add("type='" + type + "'")
-        .add("title='" + title + "'")
-        .add("url='" + url + "'")
-        .add("attached=" + attached)
-        .toString();
-  }
+    public java.lang.String getUrl() {
+        return url;
+    }
 
-  private Map<String, Object> toJson() {
-    return ImmutableMap.of(
-        "targetId", targetId,
-        "type", type,
-        "title", title,
-        "url", url,
-        "attached", attached);
-  }
+    /**
+     * Whether the target has an attached client.
+     */
+    public java.lang.Boolean getAttached() {
+        return attached;
+    }
+
+    /**
+     * Opener target Id
+     */
+    public org.openqa.selenium.devtools.target.model.TargetID getOpenerId() {
+        return openerId;
+    }
+
+    @Beta()
+    public org.openqa.selenium.devtools.target.model.BrowserContextID getBrowserContextId() {
+        return browserContextId;
+    }
+
+    private static TargetInfo fromJson(JsonInput input) {
+        org.openqa.selenium.devtools.target.model.TargetID targetId = null;
+        java.lang.String type = null;
+        java.lang.String title = null;
+        java.lang.String url = null;
+        java.lang.Boolean attached = null;
+        org.openqa.selenium.devtools.target.model.TargetID openerId = null;
+        org.openqa.selenium.devtools.target.model.BrowserContextID browserContextId = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "targetId":
+                    targetId = input.read(org.openqa.selenium.devtools.target.model.TargetID.class);
+                    break;
+                case "type":
+                    type = input.nextString();
+                    break;
+                case "title":
+                    title = input.nextString();
+                    break;
+                case "url":
+                    url = input.nextString();
+                    break;
+                case "attached":
+                    attached = input.nextBoolean();
+                    break;
+                case "openerId":
+                    openerId = input.read(org.openqa.selenium.devtools.target.model.TargetID.class);
+                    break;
+                case "browserContextId":
+                    browserContextId = input.read(org.openqa.selenium.devtools.target.model.BrowserContextID.class);
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new TargetInfo(targetId, type, title, url, attached, openerId, browserContextId);
+    }
 }

@@ -1,82 +1,70 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.network.model;
 
+import org.openqa.selenium.Beta;
+import org.openqa.selenium.json.JsonInput;
+
 /**
- * Request pattern for interception
+ * Request pattern for interception.
  */
+@org.openqa.selenium.Beta()
 public class RequestPattern {
 
-  private String urlPattern;
+    private final java.lang.String urlPattern;
 
-  private ResourceType resourceType;
+    private final org.openqa.selenium.devtools.network.model.ResourceType resourceType;
 
-  private InterceptionStage interceptionStage;
+    private final org.openqa.selenium.devtools.network.model.InterceptionStage interceptionStage;
 
-  public RequestPattern(String urlPattern,
-                        ResourceType resourceType,
-                        InterceptionStage interceptionStage) {
-    this.urlPattern = urlPattern;
-    this.resourceType = resourceType;
-    this.interceptionStage = interceptionStage;
-  }
+    public RequestPattern(java.lang.String urlPattern, org.openqa.selenium.devtools.network.model.ResourceType resourceType, org.openqa.selenium.devtools.network.model.InterceptionStage interceptionStage) {
+        this.urlPattern = urlPattern;
+        this.resourceType = resourceType;
+        this.interceptionStage = interceptionStage;
+    }
 
-  /**
-   * Wildcards ('*' -&gt; zero or more, '?' -&gt; exactly one) are allowed. Escape character is backslash.
-   * Omitting is equivalent to "*".
-   */
-  public String getUrlPattern() {
-    return urlPattern;
-  }
+    /**
+     * Wildcards ('*' -> zero or more, '?' -> exactly one) are allowed. Escape character is
+     * backslash. Omitting is equivalent to "*".
+     */
+    public java.lang.String getUrlPattern() {
+        return urlPattern;
+    }
 
-  /**
-   * Wildcards ('*' -&gt; zero or more, '?' -&gt; exactly one) are allowed. Escape character is backslash.
-   * Omitting is equivalent to "*".
-   */
-  public void setUrlPattern(String urlPattern) {
-    this.urlPattern = urlPattern;
-  }
+    /**
+     * If set, only requests for matching resource types will be intercepted.
+     */
+    public org.openqa.selenium.devtools.network.model.ResourceType getResourceType() {
+        return resourceType;
+    }
 
-  /**
-   * If set, only requests for matching resource types will be intercepted.
-   */
-  public ResourceType getResourceType() {
-    return resourceType;
-  }
+    /**
+     * Stage at wich to begin intercepting requests. Default is Request.
+     */
+    public org.openqa.selenium.devtools.network.model.InterceptionStage getInterceptionStage() {
+        return interceptionStage;
+    }
 
-  /**
-   * If set, only requests for matching resource types will be intercepted.
-   */
-  public void setResourceType(ResourceType resourceType) {
-    this.resourceType = resourceType;
-  }
-
-  /**
-   * Stage at which to begin intercepting requests. Default is Request.
-   */
-  public InterceptionStage getInterceptionStage() {
-    return interceptionStage;
-  }
-
-  /**
-   * Stage at which to begin intercepting requests. Default is Request.
-   */
-  public void setInterceptionStage(InterceptionStage interceptionStage) {
-    this.interceptionStage = interceptionStage;
-  }
+    private static RequestPattern fromJson(JsonInput input) {
+        java.lang.String urlPattern = null;
+        org.openqa.selenium.devtools.network.model.ResourceType resourceType = null;
+        org.openqa.selenium.devtools.network.model.InterceptionStage interceptionStage = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "urlPattern":
+                    urlPattern = input.nextString();
+                    break;
+                case "resourceType":
+                    resourceType = input.read(org.openqa.selenium.devtools.network.model.ResourceType.class);
+                    break;
+                case "interceptionStage":
+                    interceptionStage = input.read(org.openqa.selenium.devtools.network.model.InterceptionStage.class);
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new RequestPattern(urlPattern, resourceType, interceptionStage);
+    }
 }

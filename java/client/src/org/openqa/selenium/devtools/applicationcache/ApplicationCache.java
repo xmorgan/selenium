@@ -1,79 +1,58 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.applicationcache;
 
-import static org.openqa.selenium.devtools.ConverterFunctions.map;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.reflect.TypeToken;
-
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.Event;
-import org.openqa.selenium.devtools.applicationcache.model.ApplicationCacheModel;
-import org.openqa.selenium.devtools.applicationcache.model.ApplicationCacheStatusUpdated;
-import org.openqa.selenium.devtools.applicationcache.model.FrameWithManifest;
-import org.openqa.selenium.devtools.page.model.FrameId;
+import org.openqa.selenium.devtools.ConverterFunctions;
+import com.google.common.collect.ImmutableMap;
+import org.openqa.selenium.json.JsonInput;
 
-import java.util.List;
-import java.util.Objects;
-
+@Beta()
 public class ApplicationCache {
 
-  /** Enables application cache domain notifications. */
-  public static Command<Void> enable() {
-    return new Command<>("ApplicationCache.enable", ImmutableMap.of());
-  }
+    /**
+     * Enables application cache domain notifications.
+     */
+    public static Command<Void> enable() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("ApplicationCache.enable", params.build());
+    }
 
-  /** Returns relevant application cache data for the document in given frame. */
-  public static Command<ApplicationCacheModel> getApplicationCacheForFrame(FrameId frameId) {
-    Objects.requireNonNull(frameId, "frameId is required");
-    return new Command<>(
-        "ApplicationCache.getApplicationCacheForFrame",
-        ImmutableMap.of("frameId", frameId),
-        map("applicationCache", ApplicationCacheModel.class));
-  }
+    /**
+     * Returns relevant application cache data for the document in given frame.
+     */
+    public static Command<org.openqa.selenium.devtools.applicationcache.model.ApplicationCache> getApplicationCacheForFrame(org.openqa.selenium.devtools.page.model.FrameId frameId) {
+        java.util.Objects.requireNonNull(frameId, "frameId is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("frameId", frameId);
+        return new Command<>("ApplicationCache.getApplicationCacheForFrame", params.build(), ConverterFunctions.map("applicationCache", org.openqa.selenium.devtools.applicationcache.model.ApplicationCache.class));
+    }
 
-  /**
-   * Returns array of frame identifiers with manifest urls for each frame containing a document
-   * associated with some application cache.
-   */
-  public static Command<List<FrameWithManifest>> getFramesWithManifests() {
-    return new Command<>(
-        "ApplicationCache.getFramesWithManifests",
-        ImmutableMap.of(),
-        map("frameIds", new TypeToken<List<FrameWithManifest>>() {}.getType()));
-  }
+    /**
+     * Returns array of frame identifiers with manifest urls for each frame containing a document
+     * associated with some application cache.
+     */
+    public static Command<java.util.List<org.openqa.selenium.devtools.applicationcache.model.FrameWithManifest>> getFramesWithManifests() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("ApplicationCache.getFramesWithManifests", params.build(), ConverterFunctions.map("frameIds", new com.google.common.reflect.TypeToken<java.util.List<org.openqa.selenium.devtools.applicationcache.model.FrameWithManifest>>() {
+        }.getType()));
+    }
 
-  public static Command<String> getManifestForFrame(FrameId frameId) {
-    Objects.requireNonNull(frameId, "frameId is required");
-    return new Command<>(
-        "ApplicationCache.getManifestForFrame",
-        ImmutableMap.of("frameId", frameId),
-        map("manifestURL", String.class));
-  }
+    /**
+     * Returns manifest URL for document in the given frame.
+     */
+    public static Command<java.lang.String> getManifestForFrame(org.openqa.selenium.devtools.page.model.FrameId frameId) {
+        java.util.Objects.requireNonNull(frameId, "frameId is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("frameId", frameId);
+        return new Command<>("ApplicationCache.getManifestForFrame", params.build(), ConverterFunctions.map("manifestURL", java.lang.String.class));
+    }
 
-  public static Event<ApplicationCacheStatusUpdated> applicationCacheStatusUpdated() {
-    return new Event<>(
-        "ApplicationCache.applicationCacheStatusUpdated",
-        map("frameId", ApplicationCacheStatusUpdated.class));
-  }
+    public static Event<org.openqa.selenium.devtools.applicationcache.model.ApplicationCacheStatusUpdated> applicationCacheStatusUpdated() {
+        return new Event<>("ApplicationCache.applicationCacheStatusUpdated", input -> input.read(org.openqa.selenium.devtools.applicationcache.model.ApplicationCacheStatusUpdated.class));
+    }
 
-  public static Event<Boolean> networkStateUpdated() {
-    return new Event<>("ApplicationCache.networkStateUpdated", map("isNowOnline", Boolean.class));
-  }
+    public static Event<java.lang.Boolean> networkStateUpdated() {
+        return new Event<>("ApplicationCache.networkStateUpdated", ConverterFunctions.map("isNowOnline", java.lang.Boolean.class));
+    }
 }

@@ -1,51 +1,54 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.performance.model;
 
+import org.openqa.selenium.Beta;
+import org.openqa.selenium.json.JsonInput;
+
 /**
- * This Class been created according to <a href="https://chromedevtools.github.io/devtools-protocol/tot/Performance#event-metrics">Google chrome documentation</a>
  * Run-time execution metric.
  */
 public class Metric {
-  /** Metric name */
-  private String name;
-  /** Metric value */
-  private Integer value;
 
-  public String getName() {
-    return name;
-  }
+    private final java.lang.String name;
 
-  public Integer getValue() {
-    return value;
-  }
+    private final java.lang.Number value;
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public Metric(java.lang.String name, java.lang.Number value) {
+        this.name = java.util.Objects.requireNonNull(name, "name is required");
+        this.value = java.util.Objects.requireNonNull(value, "value is required");
+    }
 
-  public void setValue(Integer value) {
-    this.value = value;
-  }
+    /**
+     * Metric name.
+     */
+    public java.lang.String getName() {
+        return name;
+    }
 
-  @Override
-  public String toString(){
-    return "{\"name\":"+getName()+",\"value\":"+getValue()+"}";
-  }
+    /**
+     * Metric value.
+     */
+    public java.lang.Number getValue() {
+        return value;
+    }
+
+    private static Metric fromJson(JsonInput input) {
+        java.lang.String name = null;
+        java.lang.Number value = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "name":
+                    name = input.nextString();
+                    break;
+                case "value":
+                    value = input.nextNumber();
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new Metric(name, value);
+    }
 }
-

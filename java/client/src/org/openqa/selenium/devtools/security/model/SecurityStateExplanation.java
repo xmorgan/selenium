@@ -1,155 +1,126 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
 package org.openqa.selenium.devtools.security.model;
 
-import static java.util.Objects.requireNonNull;
-
-import com.google.common.reflect.TypeToken;
-
-import org.openqa.selenium.devtools.network.model.MixedContentType;
-import org.openqa.selenium.devtools.network.model.SecurityState;
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
 
-import java.util.List;
-
+/**
+ * An explanation of an factor contributing to the security state.
+ */
 public class SecurityStateExplanation {
 
-  /**
-   * Security state representing the severity of the factor being explained.
-   */
-  private SecurityState securityState;
+    private final org.openqa.selenium.devtools.security.model.SecurityState securityState;
 
-  /**
-   * Title describing the type of factor.
-   */
-  private String title;
+    private final java.lang.String title;
 
-  /**
-   * Short phrase describing the type of factor.
-   */
-  private String summary;
+    private final java.lang.String summary;
 
-  /**
-   * Full text explanation of the factor.
-   */
-  private String description;
+    private final java.lang.String description;
 
-  /**
-   * The type of mixed content described by the explanation.
-   */
-  private MixedContentType mixedContentType;
+    private final org.openqa.selenium.devtools.security.model.MixedContentType mixedContentType;
 
-  /**
-   * Page certificate.
-   */
-  private List<String> certificate;
+    private final java.util.List<java.lang.String> certificate;
 
-  /**
-   * Recommendations to fix any issues.
-   */
-  private List<String> recommendations;
+    private final java.util.List<java.lang.String> recommendations;
 
-  private SecurityStateExplanation(
-      SecurityState securityState, String title, String summary, String description,
-      MixedContentType mixedContentType, List<String> certificate,
-      List<String> recommendations) {
-    this.securityState =
-        requireNonNull(securityState, "'securityState' is required for SecurityStateExplanation");
-    this.title = requireNonNull(title, "'title' is required for SecurityStateExplanation");
-    ;
-    this.summary = requireNonNull(summary, "'summary' is required for SecurityStateExplanation");
-    this.description =
-        requireNonNull(description, "'description' is required for SecurityStateExplanation");
-    this.mixedContentType =
-        requireNonNull(mixedContentType,
-                       "'mixedContentType' is required for SecurityStateExplanation");
-    this.certificate =
-        requireNonNull(certificate, "'certificate' is required for SecurityStateExplanation");
-    this.recommendations = recommendations;
-  }
-
-  private static SecurityStateExplanation fromJson(JsonInput input) {
-    SecurityState securityState = null;
-    String title = null;
-    String summary = null;
-    String description = null;
-    MixedContentType mixedContentType = null;
-    List<String> certificate = null;
-    List<String> recommendations = null;
-    while (input.hasNext()) {
-      switch (input.nextName()) {
-        case "securityState":
-          securityState = SecurityState.valueOf(input.nextString());
-          break;
-        case "title":
-          title = input.nextString();
-          break;
-        case "summary":
-          summary = input.nextString();
-          break;
-        case "description":
-          description = input.nextString();
-          break;
-        case "mixedContentType":
-          mixedContentType = MixedContentType.fromString(input.nextString());
-          break;
-        case "certificate":
-          certificate = input.read(new TypeToken<List<String>>() {
-          }.getType());
-          break;
-        case "recommendations":
-          recommendations = input.read(new TypeToken<List<String>>() {
-          }.getType());
-          break;
-        default:
-          input.skipValue();
-          break;
-      }
+    public SecurityStateExplanation(org.openqa.selenium.devtools.security.model.SecurityState securityState, java.lang.String title, java.lang.String summary, java.lang.String description, org.openqa.selenium.devtools.security.model.MixedContentType mixedContentType, java.util.List<java.lang.String> certificate, java.util.List<java.lang.String> recommendations) {
+        this.securityState = java.util.Objects.requireNonNull(securityState, "securityState is required");
+        this.title = java.util.Objects.requireNonNull(title, "title is required");
+        this.summary = java.util.Objects.requireNonNull(summary, "summary is required");
+        this.description = java.util.Objects.requireNonNull(description, "description is required");
+        this.mixedContentType = java.util.Objects.requireNonNull(mixedContentType, "mixedContentType is required");
+        this.certificate = java.util.Objects.requireNonNull(certificate, "certificate is required");
+        this.recommendations = recommendations;
     }
-    return new SecurityStateExplanation(securityState, title, summary, description,
-                                        mixedContentType, certificate, recommendations);
-  }
 
-  public SecurityState getSecurityState() {
-    return securityState;
-  }
+    /**
+     * Security state representing the severity of the factor being explained.
+     */
+    public org.openqa.selenium.devtools.security.model.SecurityState getSecurityState() {
+        return securityState;
+    }
 
-  public String getTitle() {
-    return title;
-  }
+    /**
+     * Title describing the type of factor.
+     */
+    public java.lang.String getTitle() {
+        return title;
+    }
 
-  public String getSummary() {
-    return summary;
-  }
+    /**
+     * Short phrase describing the type of factor.
+     */
+    public java.lang.String getSummary() {
+        return summary;
+    }
 
-  public String getDescription() {
-    return description;
-  }
+    /**
+     * Full text explanation of the factor.
+     */
+    public java.lang.String getDescription() {
+        return description;
+    }
 
-  public MixedContentType getMixedContentType() {
-    return mixedContentType;
-  }
+    /**
+     * The type of mixed content described by the explanation.
+     */
+    public org.openqa.selenium.devtools.security.model.MixedContentType getMixedContentType() {
+        return mixedContentType;
+    }
 
-  public List<String> getCertificate() {
-    return certificate;
-  }
+    /**
+     * Page certificate.
+     */
+    public java.util.List<java.lang.String> getCertificate() {
+        return certificate;
+    }
 
-  public List<String> getRecommendations() {
-    return recommendations;
-  }
+    /**
+     * Recommendations to fix any issues.
+     */
+    public java.util.List<java.lang.String> getRecommendations() {
+        return recommendations;
+    }
 
+    private static SecurityStateExplanation fromJson(JsonInput input) {
+        org.openqa.selenium.devtools.security.model.SecurityState securityState = null;
+        java.lang.String title = null;
+        java.lang.String summary = null;
+        java.lang.String description = null;
+        org.openqa.selenium.devtools.security.model.MixedContentType mixedContentType = null;
+        java.util.List<java.lang.String> certificate = null;
+        java.util.List<java.lang.String> recommendations = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "securityState":
+                    securityState = input.read(org.openqa.selenium.devtools.security.model.SecurityState.class);
+                    break;
+                case "title":
+                    title = input.nextString();
+                    break;
+                case "summary":
+                    summary = input.nextString();
+                    break;
+                case "description":
+                    description = input.nextString();
+                    break;
+                case "mixedContentType":
+                    mixedContentType = input.read(org.openqa.selenium.devtools.security.model.MixedContentType.class);
+                    break;
+                case "certificate":
+                    certificate = input.read(new com.google.common.reflect.TypeToken<java.util.List<java.lang.String>>() {
+                    }.getType());
+                    break;
+                case "recommendations":
+                    recommendations = input.read(new com.google.common.reflect.TypeToken<java.util.List<java.lang.String>>() {
+                    }.getType());
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new SecurityStateExplanation(securityState, title, summary, description, mixedContentType, certificate, recommendations);
+    }
 }

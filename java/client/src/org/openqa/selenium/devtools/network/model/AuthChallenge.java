@@ -1,100 +1,110 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.network.model;
 
-import static java.util.Objects.requireNonNull;
-
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
 
+/**
+ * Authorization challenge for HTTP status code 401 or 407.
+ */
+@org.openqa.selenium.Beta()
 public class AuthChallenge {
 
-  /**
-   * Origin of the challenger.
-   */
-  private String origin;
-  /**
-   * The realm of the challenge. May be empty.
-   */
-  private String realm;
-  /**
-   * The authentication scheme used, such as basic or digest
-   */
-  private String scheme;
-  /**
-   * Source of the authentication challenge.
-   * Optional
-   */
-  private Source source;
+    public enum Source {
 
-  private AuthChallenge(String origin, String realm, String scheme,
-                        Source source) {
-    this.origin = requireNonNull(origin, "'origin' is mandatory for AuthChallenge");
-    this.realm = requireNonNull(realm, "'realm' is mandatory for AuthChallenge");
-    this.scheme = requireNonNull(scheme, "'scheme' is mandatory for AuthChallenge");
-    this.source = source;
-  }
+        SERVER("Server"), PROXY("Proxy");
 
-  private static AuthChallenge fromJson(JsonInput input) {
+        private String value;
 
-    String origin = null;
-    String realm = null;
-    String scheme = null;
-    Source source = null;
+        Source(String value) {
+            this.value = value;
+        }
 
-    input.beginObject();
-    while (input.hasNext()) {
-      switch (input.nextName()) {
-        case "origin":
-          origin = input.nextString();
-          break;
-        case "realm":
-          realm = input.nextString();
-          break;
-        case "scheme":
-          scheme = input.nextString();
-          break;
-        case "source":
-          source = Source.fromString(input.nextString());
-          break;
-        default:
-          input.skipValue();
-          break;
-      }
+        public static Source fromString(String s) {
+            return java.util.Arrays.stream(Source.values()).filter(rs -> rs.value.equalsIgnoreCase(s)).findFirst().orElseThrow(() -> new org.openqa.selenium.devtools.DevToolsException("Given value " + s + " is not found within Source "));
+        }
+
+        public String toString() {
+            return value;
+        }
+
+        public String toJson() {
+            return value;
+        }
+
+        private static Source fromJson(JsonInput input) {
+            return fromString(input.nextString());
+        }
     }
-    input.endObject();
-    return new AuthChallenge(origin, realm, scheme, source);
-  }
 
+    private final Source source;
 
-  public String getScheme() {
-    return scheme;
-  }
+    private final java.lang.String origin;
 
-  public String getOrigin() {
-    return origin;
-  }
+    private final java.lang.String scheme;
 
-  public String getRealm() {
-    return realm;
-  }
+    private final java.lang.String realm;
 
-  public Source getSource() {
-    return source;
-  }
+    public AuthChallenge(Source source, java.lang.String origin, java.lang.String scheme, java.lang.String realm) {
+        this.source = source;
+        this.origin = java.util.Objects.requireNonNull(origin, "origin is required");
+        this.scheme = java.util.Objects.requireNonNull(scheme, "scheme is required");
+        this.realm = java.util.Objects.requireNonNull(realm, "realm is required");
+    }
 
+    /**
+     * Source of the authentication challenge.
+     */
+    public Source getSource() {
+        return source;
+    }
+
+    /**
+     * Origin of the challenger.
+     */
+    public java.lang.String getOrigin() {
+        return origin;
+    }
+
+    /**
+     * The authentication scheme used, such as basic or digest
+     */
+    public java.lang.String getScheme() {
+        return scheme;
+    }
+
+    /**
+     * The realm of the challenge. May be empty.
+     */
+    public java.lang.String getRealm() {
+        return realm;
+    }
+
+    private static AuthChallenge fromJson(JsonInput input) {
+        Source source = null;
+        java.lang.String origin = null;
+        java.lang.String scheme = null;
+        java.lang.String realm = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "source":
+                    source = Source.fromString(input.nextString());
+                    break;
+                case "origin":
+                    origin = input.nextString();
+                    break;
+                case "scheme":
+                    scheme = input.nextString();
+                    break;
+                case "realm":
+                    realm = input.nextString();
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new AuthChallenge(source, origin, scheme, realm);
+    }
 }

@@ -1,146 +1,166 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.network.model;
 
-import static java.util.Objects.requireNonNull;
-
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
-
-import java.util.Date;
 
 /**
  * Cookie object
  */
 public class Cookie {
 
-  private String name;
+    private final java.lang.String name;
 
-  private String value;
+    private final java.lang.String value;
 
-  private String domain;
+    private final java.lang.String domain;
 
-  private String path;
+    private final java.lang.String path;
 
-  private long expires;
+    private final java.lang.Number expires;
 
-  private boolean httpOnly;
+    private final java.lang.Integer size;
 
-  private boolean secure;
+    private final java.lang.Boolean httpOnly;
 
-  public String getName() {
-    return name;
-  }
+    private final java.lang.Boolean secure;
 
-  public String getValue() {
-    return value;
-  }
+    private final java.lang.Boolean session;
 
-  public String getDomain() {
-    return domain;
-  }
+    private final org.openqa.selenium.devtools.network.model.CookieSameSite sameSite;
 
-  public String getPath() {
-    return path;
-  }
-
-  public long getExpires() {
-    return expires;
-  }
-
-  public boolean isHttpOnly() {
-    return httpOnly;
-  }
-
-  public boolean isSecure() {
-    return secure;
-  }
-
-  public Cookie(String name, String value, String domain, String path, long expires,
-                Boolean httpOnly, Boolean secure) {
-    this.name = requireNonNull(name, "'name' is required for Cookie");
-    this.value = requireNonNull(value, "'value' is required for Cookie");
-    this.domain = requireNonNull(domain, "'domain' is required for Cookie");
-    this.path = requireNonNull(path, "'path' is required for Cookie");
-    this.expires = expires;
-    this.httpOnly = httpOnly;
-    this.secure = secure;
-  }
-
-  org.openqa.selenium.Cookie asSeleniumCookie() {
-    return new org.openqa.selenium.Cookie.Builder(name, value).domain(domain).path(path)
-        .expiresOn(new Date(expires)).isSecure(secure).isHttpOnly(httpOnly).build();
-  }
-
-  public static Cookie fromSeleniumCookie(org.openqa.selenium.Cookie cookie) {
-    return new Cookie(cookie.getName(), cookie.getValue(), cookie.getDomain(), cookie.getPath(),
-                      cookie.getExpiry() != null ? cookie.getExpiry().getTime() : 0,
-                      cookie.isHttpOnly(), cookie.isSecure());
-  }
-
-  private static Cookie fromJson(JsonInput input) {
-
-    String name = null;
-
-    String value = null;
-
-    String domain = null;
-
-    String path = null;
-
-    long expires = 0;
-
-    boolean httpOnly = false;
-
-    boolean secure = false;
-
-    input.beginObject();
-    while (input.hasNext()) {
-      switch (input.nextName()) {
-        case "name":
-          name = input.nextString();
-          break;
-        case "value":
-          value = input.nextString();
-          break;
-        case "domain":
-          domain = input.nextString();
-          break;
-
-        case "path":
-          path = input.nextString();
-          break;
-
-        case "expires":
-          expires = input.nextNumber().longValue();
-          break;
-        case "httpOnly":
-          httpOnly = input.nextBoolean();
-          break;
-        case "secure":
-          secure = input.nextBoolean();
-          break;
-        default:
-          input.skipValue();
-          break;
-      }
+    public Cookie(java.lang.String name, java.lang.String value, java.lang.String domain, java.lang.String path, java.lang.Number expires, java.lang.Integer size, java.lang.Boolean httpOnly, java.lang.Boolean secure, java.lang.Boolean session, org.openqa.selenium.devtools.network.model.CookieSameSite sameSite) {
+        this.name = java.util.Objects.requireNonNull(name, "name is required");
+        this.value = java.util.Objects.requireNonNull(value, "value is required");
+        this.domain = java.util.Objects.requireNonNull(domain, "domain is required");
+        this.path = java.util.Objects.requireNonNull(path, "path is required");
+        this.expires = java.util.Objects.requireNonNull(expires, "expires is required");
+        this.size = java.util.Objects.requireNonNull(size, "size is required");
+        this.httpOnly = java.util.Objects.requireNonNull(httpOnly, "httpOnly is required");
+        this.secure = java.util.Objects.requireNonNull(secure, "secure is required");
+        this.session = java.util.Objects.requireNonNull(session, "session is required");
+        this.sameSite = sameSite;
     }
-    input.endObject();
 
-    return new Cookie(name, value, domain, path, expires, httpOnly, secure);
-  }
+    /**
+     * Cookie name.
+     */
+    public java.lang.String getName() {
+        return name;
+    }
+
+    /**
+     * Cookie value.
+     */
+    public java.lang.String getValue() {
+        return value;
+    }
+
+    /**
+     * Cookie domain.
+     */
+    public java.lang.String getDomain() {
+        return domain;
+    }
+
+    /**
+     * Cookie path.
+     */
+    public java.lang.String getPath() {
+        return path;
+    }
+
+    /**
+     * Cookie expiration date as the number of seconds since the UNIX epoch.
+     */
+    public java.lang.Number getExpires() {
+        return expires;
+    }
+
+    /**
+     * Cookie size.
+     */
+    public java.lang.Integer getSize() {
+        return size;
+    }
+
+    /**
+     * True if cookie is http-only.
+     */
+    public java.lang.Boolean getHttpOnly() {
+        return httpOnly;
+    }
+
+    /**
+     * True if cookie is secure.
+     */
+    public java.lang.Boolean getSecure() {
+        return secure;
+    }
+
+    /**
+     * True in case of session cookie.
+     */
+    public java.lang.Boolean getSession() {
+        return session;
+    }
+
+    /**
+     * Cookie SameSite type.
+     */
+    public org.openqa.selenium.devtools.network.model.CookieSameSite getSameSite() {
+        return sameSite;
+    }
+
+    private static Cookie fromJson(JsonInput input) {
+        java.lang.String name = null;
+        java.lang.String value = null;
+        java.lang.String domain = null;
+        java.lang.String path = null;
+        java.lang.Number expires = null;
+        java.lang.Integer size = null;
+        java.lang.Boolean httpOnly = null;
+        java.lang.Boolean secure = null;
+        java.lang.Boolean session = null;
+        org.openqa.selenium.devtools.network.model.CookieSameSite sameSite = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "name":
+                    name = input.nextString();
+                    break;
+                case "value":
+                    value = input.nextString();
+                    break;
+                case "domain":
+                    domain = input.nextString();
+                    break;
+                case "path":
+                    path = input.nextString();
+                    break;
+                case "expires":
+                    expires = input.nextNumber();
+                    break;
+                case "size":
+                    size = input.nextNumber().intValue();
+                    break;
+                case "httpOnly":
+                    httpOnly = input.nextBoolean();
+                    break;
+                case "secure":
+                    secure = input.nextBoolean();
+                    break;
+                case "session":
+                    session = input.nextBoolean();
+                    break;
+                case "sameSite":
+                    sameSite = input.read(org.openqa.selenium.devtools.network.model.CookieSameSite.class);
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new Cookie(name, value, domain, path, expires, size, httpOnly, secure, session, sameSite);
+    }
 }

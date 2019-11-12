@@ -1,97 +1,99 @@
 package org.openqa.selenium.devtools.fetch.model;
 
-import org.openqa.selenium.devtools.network.model.Request;
-import org.openqa.selenium.devtools.network.model.ResourceType;
-import org.openqa.selenium.devtools.page.model.FrameId;
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
 
-import java.util.Objects;
-
+/**
+ * Issued when the domain is enabled with handleAuthRequests set to true.
+ * The request is paused until client responds with continueWithAuth.
+ */
 public class AuthRequired {
 
-  /**
-   * Each request the page makes will have a unique id.
-   */
-  private final RequestId requestId;
-  /**
-   * The details of the request.
-   */
-  private final Request request;
-  /**
-   * The id of the frame that initiated the request.
-   */
-  private final FrameId frameId;
-  /**
-   * How the requested resource will be used.
-   */
-  private final ResourceType resourceType;
-  /**
-   * Details of the Authorization Challenge encountered. If this is set, client should respond with
-   * continueRequest that contains AuthChallengeResponse.
-   */
-  private final AuthChallenge authChallenge;
+    private final org.openqa.selenium.devtools.fetch.model.RequestId requestId;
 
-  public AuthRequired(
-      RequestId requestId,
-      Request request,
-      FrameId frameId,
-      ResourceType resourceType,
-      AuthChallenge authChallenge) {
-    this.requestId = Objects.requireNonNull(requestId, "requestId is required");
-    this.request = Objects.requireNonNull(request, "request is required");
-    this.frameId = Objects.requireNonNull(frameId, "frameId is required");
-    this.resourceType = Objects.requireNonNull(resourceType, "resourceType is required");
-    this.authChallenge = Objects.requireNonNull(authChallenge, "authChallenge is required");
-  }
+    private final org.openqa.selenium.devtools.network.model.Request request;
 
-  private static AuthRequired fromJson(JsonInput input) {
-    RequestId requestId = null;
-    Request request = null;
-    FrameId frameId = null;
-    ResourceType resourceType = null;
-    AuthChallenge authChallenge = null;
-    while (input.hasNext()) {
-      switch (input.nextName()) {
-        case "requestId":
-          requestId = input.read(RequestId.class);
-          break;
-        case "request":
-          request = input.read(Request.class);
-          break;
-        case "frameId":
-          frameId = input.read(FrameId.class);
-          break;
-        case "resourceType":
-          resourceType = input.read(ResourceType.class);
-          break;
-        case "authChallenge":
-          authChallenge = input.read(AuthChallenge.class);
-          break;
-        default:
-          input.skipValue();
-          break;
-      }
+    private final org.openqa.selenium.devtools.page.model.FrameId frameId;
+
+    private final org.openqa.selenium.devtools.network.model.ResourceType resourceType;
+
+    private final org.openqa.selenium.devtools.fetch.model.AuthChallenge authChallenge;
+
+    public AuthRequired(org.openqa.selenium.devtools.fetch.model.RequestId requestId, org.openqa.selenium.devtools.network.model.Request request, org.openqa.selenium.devtools.page.model.FrameId frameId, org.openqa.selenium.devtools.network.model.ResourceType resourceType, org.openqa.selenium.devtools.fetch.model.AuthChallenge authChallenge) {
+        this.requestId = java.util.Objects.requireNonNull(requestId, "requestId is required");
+        this.request = java.util.Objects.requireNonNull(request, "request is required");
+        this.frameId = java.util.Objects.requireNonNull(frameId, "frameId is required");
+        this.resourceType = java.util.Objects.requireNonNull(resourceType, "resourceType is required");
+        this.authChallenge = java.util.Objects.requireNonNull(authChallenge, "authChallenge is required");
     }
-    return new AuthRequired(requestId, request, frameId, resourceType, authChallenge);
-  }
 
-  public RequestId getRequestId() {
-    return requestId;
-  }
+    /**
+     * Each request the page makes will have a unique id.
+     */
+    public org.openqa.selenium.devtools.fetch.model.RequestId getRequestId() {
+        return requestId;
+    }
 
-  public Request getRequest() {
-    return request;
-  }
+    /**
+     * The details of the request.
+     */
+    public org.openqa.selenium.devtools.network.model.Request getRequest() {
+        return request;
+    }
 
-  public FrameId getFrameId() {
-    return frameId;
-  }
+    /**
+     * The id of the frame that initiated the request.
+     */
+    public org.openqa.selenium.devtools.page.model.FrameId getFrameId() {
+        return frameId;
+    }
 
-  public ResourceType getResourceType() {
-    return resourceType;
-  }
+    /**
+     * How the requested resource will be used.
+     */
+    public org.openqa.selenium.devtools.network.model.ResourceType getResourceType() {
+        return resourceType;
+    }
 
-  public AuthChallenge getAuthChallenge() {
-    return authChallenge;
-  }
+    /**
+     * Details of the Authorization Challenge encountered.
+     * If this is set, client should respond with continueRequest that
+     * contains AuthChallengeResponse.
+     */
+    public org.openqa.selenium.devtools.fetch.model.AuthChallenge getAuthChallenge() {
+        return authChallenge;
+    }
+
+    private static AuthRequired fromJson(JsonInput input) {
+        org.openqa.selenium.devtools.fetch.model.RequestId requestId = null;
+        org.openqa.selenium.devtools.network.model.Request request = null;
+        org.openqa.selenium.devtools.page.model.FrameId frameId = null;
+        org.openqa.selenium.devtools.network.model.ResourceType resourceType = null;
+        org.openqa.selenium.devtools.fetch.model.AuthChallenge authChallenge = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "requestId":
+                    requestId = input.read(org.openqa.selenium.devtools.fetch.model.RequestId.class);
+                    break;
+                case "request":
+                    request = input.read(org.openqa.selenium.devtools.network.model.Request.class);
+                    break;
+                case "frameId":
+                    frameId = input.read(org.openqa.selenium.devtools.page.model.FrameId.class);
+                    break;
+                case "resourceType":
+                    resourceType = input.read(org.openqa.selenium.devtools.network.model.ResourceType.class);
+                    break;
+                case "authChallenge":
+                    authChallenge = input.read(org.openqa.selenium.devtools.fetch.model.AuthChallenge.class);
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new AuthRequired(requestId, request, frameId, resourceType, authChallenge);
+    }
 }

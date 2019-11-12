@@ -1,310 +1,229 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
 package org.openqa.selenium.devtools.target;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.reflect.TypeToken;
 import org.openqa.selenium.Beta;
 import org.openqa.selenium.devtools.Command;
-import org.openqa.selenium.devtools.ConverterFunctions;
 import org.openqa.selenium.devtools.Event;
-import org.openqa.selenium.devtools.target.model.AttachToTarget;
-import org.openqa.selenium.devtools.target.model.BrowserContextID;
-import org.openqa.selenium.devtools.target.model.DetachedFromTarget;
-import org.openqa.selenium.devtools.target.model.ReceivedMessageFromTarget;
-import org.openqa.selenium.devtools.target.model.RemoteLocation;
-import org.openqa.selenium.devtools.target.model.SessionID;
-import org.openqa.selenium.devtools.target.model.TargetCrashed;
-import org.openqa.selenium.devtools.target.model.TargetID;
-import org.openqa.selenium.devtools.target.model.TargetInfo;
+import org.openqa.selenium.devtools.ConverterFunctions;
+import com.google.common.collect.ImmutableMap;
+import org.openqa.selenium.json.JsonInput;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import static org.openqa.selenium.devtools.ConverterFunctions.map;
-
+/**
+ * Supports additional targets discovery and allows to attach to them.
+ */
 public class Target {
 
-  /**
-   * Activates (focuses) the target.
-   */
-  public static Command<Void> activateTarget(TargetID targetId) {
-    Objects.requireNonNull(targetId, "Target ID must be set.");
-    return new Command<>("Target.activateTarget", ImmutableMap.of("targetId", targetId));
-  }
+    /**
+     * Activates (focuses) the target.
+     */
+    public static Command<Void> activateTarget(org.openqa.selenium.devtools.target.model.TargetID targetId) {
+        java.util.Objects.requireNonNull(targetId, "targetId is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("targetId", targetId);
+        return new Command<>("Target.activateTarget", params.build());
+    }
 
-  /**
-   * Attaches to the browser target, only uses flat sessionId mode.EXPERIMENTAL
-   *
-   * @return {@link SessionID}
-   */
-  @Beta
-  public static Command<SessionID> attachToBrowserTarget() {
-    return new Command<>(
-        "Target.attachToBrowserTarget",
-        ImmutableMap.of(),
-        ConverterFunctions.map("sessionId", SessionID.class));
-  }
+    /**
+     * Attaches to the target with given id.
+     */
+    public static Command<org.openqa.selenium.devtools.target.model.SessionID> attachToTarget(org.openqa.selenium.devtools.target.model.TargetID targetId, java.util.Optional<java.lang.Boolean> flatten) {
+        java.util.Objects.requireNonNull(targetId, "targetId is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("targetId", targetId);
+        flatten.ifPresent(p -> params.put("flatten", p));
+        return new Command<>("Target.attachToTarget", params.build(), ConverterFunctions.map("sessionId", org.openqa.selenium.devtools.target.model.SessionID.class));
+    }
 
-  /**
-   * Closes the target. If the target is a page that gets closed too.
-   */
-  public static Command<Boolean> closeTarget(TargetID targetId) {
-    Objects.requireNonNull(targetId, "Target ID must be set.");
-    return new Command<>(
-        "Target.closeTarget",
-        ImmutableMap.of("targetId", targetId),
-        ConverterFunctions.map("success", Boolean.class));
-  }
+    /**
+     * Attaches to the browser target, only uses flat sessionId mode.
+     */
+    @Beta()
+    public static Command<org.openqa.selenium.devtools.target.model.SessionID> attachToBrowserTarget() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Target.attachToBrowserTarget", params.build(), ConverterFunctions.map("sessionId", org.openqa.selenium.devtools.target.model.SessionID.class));
+    }
 
-  /**
-   * Inject object to the target's main frame that provides a communication channel with browser
-   * target. Injected object will be available as window[bindingName]. The object has the follwing
-   * API: binding.send(json) - a method to send messages over the remote debugging protocol
-   * binding.onmessage equals to json then bing to handleMessage(json) - a callback that will be called for the
-   * protocol notifications and command responses. EXPERIMENTAL
-   */
-  @Beta
-  public static Command<Void> exposeDevToolsProtocol(
-      TargetID targetId, Optional<String> bindingName) {
-    Objects.requireNonNull(targetId, "Target ID must be set.");
-    String bindingNameValue = (bindingName.isPresent()) ? bindingName.get() : "cdp";
-    return new Command<>(
-        "Target.exposeDevToolsProtocol",
-        ImmutableMap.of("targetId", targetId, "bindingName", bindingNameValue));
-  }
+    /**
+     * Closes the target. If the target is a page that gets closed too.
+     */
+    public static Command<java.lang.Boolean> closeTarget(org.openqa.selenium.devtools.target.model.TargetID targetId) {
+        java.util.Objects.requireNonNull(targetId, "targetId is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("targetId", targetId);
+        return new Command<>("Target.closeTarget", params.build(), ConverterFunctions.map("success", java.lang.Boolean.class));
+    }
 
-  /**
-   * Creates a new empty BrowserContext. Similar to an incognito profile but you can have more than
-   * one.EXPERIMENTAL
-   */
-  @Beta
-  public static Command<BrowserContextID> createBrowserContext() {
-    return new Command<>(
-        "Target.createBrowserContext",
-        ImmutableMap.of(),
-        ConverterFunctions.map("browserContextId", BrowserContextID.class));
-  }
+    /**
+     * Inject object to the target's main frame that provides a communication
+     * channel with browser target.
+     *
+     * Injected object will be available as `window[bindingName]`.
+     *
+     * The object has the follwing API:
+     * - `binding.send(json)` - a method to send messages over the remote debugging protocol
+     * - `binding.onmessage = json => handleMessage(json)` - a callback that will be called for the protocol notifications and command responses.
+     */
+    @Beta()
+    public static Command<Void> exposeDevToolsProtocol(org.openqa.selenium.devtools.target.model.TargetID targetId, java.util.Optional<java.lang.String> bindingName) {
+        java.util.Objects.requireNonNull(targetId, "targetId is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("targetId", targetId);
+        bindingName.ifPresent(p -> params.put("bindingName", p));
+        return new Command<>("Target.exposeDevToolsProtocol", params.build());
+    }
 
-  /**
-   * Returns all browser contexts created with Target.createBrowserContext method.EXPERIMENTAL
-   */
-  @Beta
-  public static Command<List<BrowserContextID>> getBrowserContexts() {
-    return new Command<>(
-        "Target.getBrowserContexts",
-        ImmutableMap.of(),
-        ConverterFunctions.map(
-            "browserContextIds", new TypeToken<List<BrowserContextID>>() {
-            }.getType()));
-  }
+    /**
+     * Creates a new empty BrowserContext. Similar to an incognito profile but you can have more than
+     * one.
+     */
+    @Beta()
+    public static Command<org.openqa.selenium.devtools.target.model.BrowserContextID> createBrowserContext() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Target.createBrowserContext", params.build(), ConverterFunctions.map("browserContextId", org.openqa.selenium.devtools.target.model.BrowserContextID.class));
+    }
 
-  /**
-   * Creates a new page.
-   */
-  public static Command<TargetID> createTarget(
-      String url,
-      Optional<Integer> width,
-      Optional<Integer> height,
-      Optional<BrowserContextID> browserContextId,
-      Optional<Boolean> enableBeginFrameControl,
-      Optional<Boolean> newWindow,
-      Optional<Boolean> background) {
-    Objects.requireNonNull(url, "Url is required");
-    final ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
-    params.put("url", url);
-    width.ifPresent(integer -> params.put("width", integer));
-    height.ifPresent(integer -> params.put("height", integer));
-    browserContextId.ifPresent(
-        bid -> params.put("browserContextId", bid));
-    enableBeginFrameControl.ifPresent(aBoolean -> params.put("enableBeginFrameControl", aBoolean));
-    newWindow.ifPresent(aBoolean -> params.put("newWindow", aBoolean));
-    background.ifPresent(aBoolean -> params.put("background", aBoolean));
-    return new Command<>(
-        "Target.createTarget", params.build(), ConverterFunctions.map("targetId", TargetID.class));
-  }
-
-  /**
-   * Detaches session with given id.
-   */
-  public static Command<Void> detachFromTarget(
-      Optional<SessionID> sessionId, Optional<TargetID> targetId) {
-    final ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
-    sessionId.ifPresent(sessionID -> params.put("sessionId", sessionID));
-    targetId.ifPresent(targetID -> params.put("targetId", targetID));
-    return new Command<>("Target.detachFromTarget", params.build());
-  }
-
-  /**
-   * Deletes a BrowserContext. All the belonging pages will be closed without calling their
-   * beforeunload hooks.EXPERIMENTAL
-   */
-  @Beta
-  public static Command<Void> disposeBrowserContext(BrowserContextID browserContextID) {
-    Objects.requireNonNull(browserContextID, "browserContextId is required");
-    return new Command<>(
-        "Target.disposeBrowserContext", ImmutableMap.of("browserContextId", browserContextID));
-  }
-
-  /**
-   * Returns information about a target.EXPERIMENTAL
-   */
-  @Beta
-  public static Command<TargetInfo> getTargetInfo(Optional<TargetID> targetId) {
-    final ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
-    targetId.ifPresent(targetID -> params.put("targetId", targetID));
-    return new Command<>(
-        "Target.getTargetInfo",
-        params.build(),
-        ConverterFunctions.map("targetInfo", TargetInfo.class));
-  }
-
-  /**
-   * Retrieves a list of available targets.
-   */
-  public static Command<List<TargetInfo>> getTargets() {
-    return new Command<>(
-        "Target.getTargets",
-        ImmutableMap.of(),
-        ConverterFunctions.map("targetInfos", new TypeToken<List<TargetInfo>>() {
+    /**
+     * Returns all browser contexts created with `Target.createBrowserContext` method.
+     */
+    @Beta()
+    public static Command<java.util.List<org.openqa.selenium.devtools.target.model.BrowserContextID>> getBrowserContexts() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Target.getBrowserContexts", params.build(), ConverterFunctions.map("browserContextIds", new com.google.common.reflect.TypeToken<java.util.List<org.openqa.selenium.devtools.target.model.BrowserContextID>>() {
         }.getType()));
-  }
+    }
 
-  /**
-   * Controls whether to discover available targets and notify via
-   * targetCreated/targetInfoChanged/targetDestroyed events.
-   */
-  public static Command<Void> sendMessageToTarget(
-      String message, Optional<SessionID> sessionID, @Deprecated Optional<TargetID> targetID) {
-    Objects.requireNonNull(message, "message is required");
-    final ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
-    params.put("message", message);
-    sessionID.ifPresent(sessionId -> params.put("sessionId", sessionId));
-    targetID.ifPresent(targetId -> params.put("targetId", targetId));
-    return new Command<>("Target.sendMessageToTarget", params.build());
-  }
+    /**
+     * Creates a new page.
+     */
+    public static Command<org.openqa.selenium.devtools.target.model.TargetID> createTarget(java.lang.String url, java.util.Optional<java.lang.Integer> width, java.util.Optional<java.lang.Integer> height, java.util.Optional<org.openqa.selenium.devtools.target.model.BrowserContextID> browserContextId, java.util.Optional<java.lang.Boolean> enableBeginFrameControl, java.util.Optional<java.lang.Boolean> newWindow, java.util.Optional<java.lang.Boolean> background) {
+        java.util.Objects.requireNonNull(url, "url is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("url", url);
+        width.ifPresent(p -> params.put("width", p));
+        height.ifPresent(p -> params.put("height", p));
+        browserContextId.ifPresent(p -> params.put("browserContextId", p));
+        enableBeginFrameControl.ifPresent(p -> params.put("enableBeginFrameControl", p));
+        newWindow.ifPresent(p -> params.put("newWindow", p));
+        background.ifPresent(p -> params.put("background", p));
+        return new Command<>("Target.createTarget", params.build(), ConverterFunctions.map("targetId", org.openqa.selenium.devtools.target.model.TargetID.class));
+    }
 
-  /**
-   * Attaches to the target with given id.
-   *
-   * @return {@link SessionID}
-   */
-  public static Command<SessionID> attachToTarget(TargetID targetId, Optional<Boolean> flatten) {
-    Objects.requireNonNull(targetId, "Target ID must be set.");
-    final ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
-    params.put("targetId", targetId);
-    params.put("flatten", flatten.orElse(true));
-    return new Command<>(
-        "Target.attachToTarget",
-        params.build(),
-        ConverterFunctions.map("sessionId", SessionID.class));
-  }
+    /**
+     * Detaches session with given id.
+     */
+    public static Command<Void> detachFromTarget(java.util.Optional<org.openqa.selenium.devtools.target.model.SessionID> sessionId, java.util.Optional<org.openqa.selenium.devtools.target.model.TargetID> targetId) {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        sessionId.ifPresent(p -> params.put("sessionId", p));
+        targetId.ifPresent(p -> params.put("targetId", p));
+        return new Command<>("Target.detachFromTarget", params.build());
+    }
 
-  /**
-   * Controls whether to automatically attach to new targets which are considered to be related to
-   * this one. When turned on, attaches to all existing related targets as well. When turned off,
-   * automatically detaches from all currently attached targets.EXPERIMENTAL
-   */
-  @Beta
-  public static Command<Void> setAutoAttach(
-      Boolean autoAttach, Boolean waitForDebuggerOnStart, Optional<Boolean> flatten) {
-    Objects.requireNonNull(autoAttach, "autoAttach is required");
-    Objects.requireNonNull(waitForDebuggerOnStart, "waitForDebuggerOnStart is required");
-    final ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
-    params.put("autoAttach", autoAttach);
-    params.put("waitForDebuggerOnStart", waitForDebuggerOnStart);
-    flatten.ifPresent(aBoolean -> params.put("flatten", aBoolean));
-    return new Command<>("Target.setAutoAttach", params.build());
-  }
+    /**
+     * Deletes a BrowserContext. All the belonging pages will be closed without calling their
+     * beforeunload hooks.
+     */
+    @Beta()
+    public static Command<Void> disposeBrowserContext(org.openqa.selenium.devtools.target.model.BrowserContextID browserContextId) {
+        java.util.Objects.requireNonNull(browserContextId, "browserContextId is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("browserContextId", browserContextId);
+        return new Command<>("Target.disposeBrowserContext", params.build());
+    }
 
-  /**
-   * Controls whether to discover available targets and notify via
-   * targetCreated/targetInfoChanged/targetDestroyed events.
-   */
-  public static Command<Void> setDiscoverTargets(boolean discover) {
-    return new Command(
-        "Target.setDiscoverTargets",
-        ImmutableMap.of("discover", discover));
-  }
+    /**
+     * Returns information about a target.
+     */
+    @Beta()
+    public static Command<org.openqa.selenium.devtools.target.model.TargetInfo> getTargetInfo(java.util.Optional<org.openqa.selenium.devtools.target.model.TargetID> targetId) {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        targetId.ifPresent(p -> params.put("targetId", p));
+        return new Command<>("Target.getTargetInfo", params.build(), ConverterFunctions.map("targetInfo", org.openqa.selenium.devtools.target.model.TargetInfo.class));
+    }
 
-  /**
-   * Enables target discovery for the specified locations, when setDiscoverTargets was set to
-   * true.EXPERIMENTAL
-   */
-  @Beta
-  public static Command<Void> setRemoteLocations(List<RemoteLocation> locations) {
-    return new Command(
-        "Target.setRemoteLocations",
-        ImmutableMap.of("locations", locations));
-  }
+    /**
+     * Retrieves a list of available targets.
+     */
+    public static Command<java.util.List<org.openqa.selenium.devtools.target.model.TargetInfo>> getTargets() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Target.getTargets", params.build(), ConverterFunctions.map("targetInfos", new com.google.common.reflect.TypeToken<java.util.List<org.openqa.selenium.devtools.target.model.TargetInfo>>() {
+        }.getType()));
+    }
 
-  /**
-   * Issued when attached to target because of auto-attach or attachToTarget command.EXPERIMENTAL
-   */
-  @Beta
-  public static Event<AttachToTarget> attachedToTarget() {
-    return new Event<>("Target.attachedToTarget", map("sessionId", AttachToTarget.class));
-  }
+    /**
+     * Sends protocol message over session with given id.
+     */
+    public static Command<Void> sendMessageToTarget(java.lang.String message, java.util.Optional<org.openqa.selenium.devtools.target.model.SessionID> sessionId, java.util.Optional<org.openqa.selenium.devtools.target.model.TargetID> targetId) {
+        java.util.Objects.requireNonNull(message, "message is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("message", message);
+        sessionId.ifPresent(p -> params.put("sessionId", p));
+        targetId.ifPresent(p -> params.put("targetId", p));
+        return new Command<>("Target.sendMessageToTarget", params.build());
+    }
 
-  /**
-   * Issued when detached from target for any reason (including detachFromTarget command). Can be
-   * issued multiple times per target if multiple sessions have been attached to it.EXPERIMENTAL
-   */
-  @Beta
-  public static Event<DetachedFromTarget> detachedFromTarget() {
-    return new Event<>("Target.detachedFromTarget", input -> input.read(DetachedFromTarget.class));
-  }
+    /**
+     * Controls whether to automatically attach to new targets which are considered to be related to
+     * this one. When turned on, attaches to all existing related targets as well. When turned off,
+     * automatically detaches from all currently attached targets.
+     */
+    @Beta()
+    public static Command<Void> setAutoAttach(java.lang.Boolean autoAttach, java.lang.Boolean waitForDebuggerOnStart, java.util.Optional<java.lang.Boolean> flatten) {
+        java.util.Objects.requireNonNull(autoAttach, "autoAttach is required");
+        java.util.Objects.requireNonNull(waitForDebuggerOnStart, "waitForDebuggerOnStart is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("autoAttach", autoAttach);
+        params.put("waitForDebuggerOnStart", waitForDebuggerOnStart);
+        flatten.ifPresent(p -> params.put("flatten", p));
+        return new Command<>("Target.setAutoAttach", params.build());
+    }
 
-  /**
-   * Notifies about a new protocol message received from the session (as reported in
-   * attachedToTarget event).
-   */
-  public static Event<ReceivedMessageFromTarget> receivedMessageFromTarget() {
-    return new Event<>(
-        "Target.receivedMessageFromTarget", map("sessionId", ReceivedMessageFromTarget.class));
-  }
+    /**
+     * Controls whether to discover available targets and notify via
+     * `targetCreated/targetInfoChanged/targetDestroyed` events.
+     */
+    public static Command<Void> setDiscoverTargets(java.lang.Boolean discover) {
+        java.util.Objects.requireNonNull(discover, "discover is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("discover", discover);
+        return new Command<>("Target.setDiscoverTargets", params.build());
+    }
 
-  /**
-   * Issued when a possible inspection target is created.
-   */
-  public static Event<TargetInfo> targetCreated() {
-    return new Event<>("Target.targetDestroyed", map("targetInfo", TargetInfo.class));
-  }
+    /**
+     * Enables target discovery for the specified locations, when `setDiscoverTargets` was set to
+     * `true`.
+     */
+    @Beta()
+    public static Command<Void> setRemoteLocations(java.util.List<org.openqa.selenium.devtools.target.model.RemoteLocation> locations) {
+        java.util.Objects.requireNonNull(locations, "locations is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("locations", locations);
+        return new Command<>("Target.setRemoteLocations", params.build());
+    }
 
-  /**
-   * Issued when a target is destroyed.
-   */
-  public static Event<TargetID> targetDestroyed() {
-    return new Event<>("Target.targetDestroyed", map("targetId", TargetID.class));
-  }
+    public static Event<org.openqa.selenium.devtools.target.model.AttachedToTarget> attachedToTarget() {
+        return new Event<>("Target.attachedToTarget", input -> input.read(org.openqa.selenium.devtools.target.model.AttachedToTarget.class));
+    }
 
-  /**
-   * Issued when a target has crashed.
-   */
-  public static Event<TargetCrashed> targetCrashed() {
-    return new Event<>("Target.targetCrashed", map("targetId", TargetCrashed.class));
-  }
+    public static Event<org.openqa.selenium.devtools.target.model.DetachedFromTarget> detachedFromTarget() {
+        return new Event<>("Target.detachedFromTarget", input -> input.read(org.openqa.selenium.devtools.target.model.DetachedFromTarget.class));
+    }
 
-  /**
-   * Issued when some information about a target has changed. This only happens between
-   * targetCreated and targetDestroyed.
-   */
-  public static Event<TargetInfo> targetInfoChanged() {
-    return new Event<>("Target.targetInfoChanged", map("targetInfo", TargetInfo.class));
-  }
+    public static Event<org.openqa.selenium.devtools.target.model.ReceivedMessageFromTarget> receivedMessageFromTarget() {
+        return new Event<>("Target.receivedMessageFromTarget", input -> input.read(org.openqa.selenium.devtools.target.model.ReceivedMessageFromTarget.class));
+    }
+
+    public static Event<org.openqa.selenium.devtools.target.model.TargetInfo> targetCreated() {
+        return new Event<>("Target.targetCreated", ConverterFunctions.map("targetInfo", org.openqa.selenium.devtools.target.model.TargetInfo.class));
+    }
+
+    public static Event<org.openqa.selenium.devtools.target.model.TargetID> targetDestroyed() {
+        return new Event<>("Target.targetDestroyed", ConverterFunctions.map("targetId", org.openqa.selenium.devtools.target.model.TargetID.class));
+    }
+
+    public static Event<org.openqa.selenium.devtools.target.model.TargetCrashed> targetCrashed() {
+        return new Event<>("Target.targetCrashed", input -> input.read(org.openqa.selenium.devtools.target.model.TargetCrashed.class));
+    }
+
+    public static Event<org.openqa.selenium.devtools.target.model.TargetInfo> targetInfoChanged() {
+        return new Event<>("Target.targetInfoChanged", ConverterFunctions.map("targetInfo", org.openqa.selenium.devtools.target.model.TargetInfo.class));
+    }
 }

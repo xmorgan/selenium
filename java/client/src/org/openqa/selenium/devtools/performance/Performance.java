@@ -1,82 +1,80 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.performance;
-
-import static org.openqa.selenium.devtools.ConverterFunctions.map;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.reflect.TypeToken;
 
 import org.openqa.selenium.Beta;
 import org.openqa.selenium.devtools.Command;
-import org.openqa.selenium.devtools.performance.model.Metric;
+import org.openqa.selenium.devtools.Event;
+import org.openqa.selenium.devtools.ConverterFunctions;
+import com.google.common.collect.ImmutableMap;
+import org.openqa.selenium.json.JsonInput;
 
-import java.util.List;
-import java.util.Objects;
-
-/**
- * All available DevTools Network methods and events <a href="https://chromedevtools.github.io/devtools-protocol/tot/Performance">Google Documentation</a>
- */
 public class Performance {
 
-  /**
-   * Disable collecting and reporting metrics.
-   */
-  public static Command<Void> disable() {
-    return new Command<>("Performance.disable", ImmutableMap.of());
-  }
+    /**
+     * Disable collecting and reporting metrics.
+     */
+    public static Command<Void> disable() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Performance.disable", params.build());
+    }
 
-  /**
-   * Enable collecting and reporting metrics.
-   */
-  public static Command<Void> enable() {
-    return new Command<>("Performance.enable", ImmutableMap.of());
-  }
+    /**
+     * Enable collecting and reporting metrics.
+     */
+    public static Command<Void> enable() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Performance.enable", params.build());
+    }
 
-  public enum SetTimeDomainTimeDomain {
-    TIMETICKS,
-    THREADTICKS;
-  }
+    public enum SetTimeDomainTimeDomain {
 
-  /**
-   * Warning this is an Experimental Method
-   * Sets time domain to use for collecting and reporting duration metrics. Note that this must be called before enabling metrics collection.
-   * Calling this method while metrics collection is enabled returns an error.EXPERIMENTAL
-   *
-   * @param timeDomain - {@link SetTimeDomainTimeDomain}
-   */
-  @Beta
-  public static Command<Void> setTimeDomain(SetTimeDomainTimeDomain timeDomain) {
-    Objects.requireNonNull(timeDomain, "'timeDomain' must be set");
-    return new Command<>("Performance.setTimeDomain",
-                         ImmutableMap.of("timeDomain", timeDomain.name()));
-  }
+        TIMETICKS("timeTicks"), THREADTICKS("threadTicks");
 
-  /**
-   * Retrieve current values of run-time metrics.
-   *
-   * @return List of {@link List}
-   */
-  public static Command<List<Metric>> getMetrics() {
-    return new Command<>("Performance.getMetrics", ImmutableMap.of(),
-                         map("metrics", new TypeToken<List<Metric>>() {
-                         }.getType()));
-  }
+        private String value;
 
+        SetTimeDomainTimeDomain(String value) {
+            this.value = value;
+        }
 
+        public static SetTimeDomainTimeDomain fromString(String s) {
+            return java.util.Arrays.stream(SetTimeDomainTimeDomain.values()).filter(rs -> rs.value.equalsIgnoreCase(s)).findFirst().orElseThrow(() -> new org.openqa.selenium.devtools.DevToolsException("Given value " + s + " is not found within SetTimeDomainTimeDomain "));
+        }
+
+        public String toString() {
+            return value;
+        }
+
+        public String toJson() {
+            return value;
+        }
+
+        private static SetTimeDomainTimeDomain fromJson(JsonInput input) {
+            return fromString(input.nextString());
+        }
+    }
+
+    /**
+     * Sets time domain to use for collecting and reporting duration metrics.
+     * Note that this must be called before enabling metrics collection. Calling
+     * this method while metrics collection is enabled returns an error.
+     */
+    @Beta()
+    public static Command<Void> setTimeDomain(SetTimeDomainTimeDomain timeDomain) {
+        java.util.Objects.requireNonNull(timeDomain, "timeDomain is required");
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        params.put("timeDomain", timeDomain);
+        return new Command<>("Performance.setTimeDomain", params.build());
+    }
+
+    /**
+     * Retrieve current values of run-time metrics.
+     */
+    public static Command<java.util.List<org.openqa.selenium.devtools.performance.model.Metric>> getMetrics() {
+        ImmutableMap.Builder<String, Object> params = ImmutableMap.builder();
+        return new Command<>("Performance.getMetrics", params.build(), ConverterFunctions.map("metrics", new com.google.common.reflect.TypeToken<java.util.List<org.openqa.selenium.devtools.performance.model.Metric>>() {
+        }.getType()));
+    }
+
+    public static Event<org.openqa.selenium.devtools.performance.model.Metrics> metrics() {
+        return new Event<>("Performance.metrics", input -> input.read(org.openqa.selenium.devtools.performance.model.Metrics.class));
+    }
 }

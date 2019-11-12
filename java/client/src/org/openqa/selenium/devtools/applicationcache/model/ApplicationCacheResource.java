@@ -1,57 +1,68 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
 package org.openqa.selenium.devtools.applicationcache.model;
 
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
 
-import java.util.Objects;
-
-/** Detailed application cache resource information. */
+/**
+ * Detailed application cache resource information.
+ */
 public class ApplicationCacheResource {
 
-  /** Resource url. */
-  private final String url;
-  /** Resource size. */
-  private final int size;
-  /** Resource type. */
-  private final String type;
+    private final java.lang.String url;
 
-  public ApplicationCacheResource(String url, int size, String type) {
-    this.url = Objects.requireNonNull(url, "url is required");
-    this.size = Objects.requireNonNull(size, "size is required");
-    this.type = Objects.requireNonNull(type, "type is required");
-  }
+    private final java.lang.Integer size;
 
-  private static ApplicationCacheResource fromJson(JsonInput input) {
-    String url = input.nextString(), type = null;
-    Integer size = null;
-    while (input.hasNext()) {
-      switch (input.nextName()) {
-        case "type":
-          type = input.nextString();
-          break;
-        case "size":
-          size = input.read(Integer.class);
-          break;
-        default:
-          input.skipValue();
-          break;
-      }
+    private final java.lang.String type;
+
+    public ApplicationCacheResource(java.lang.String url, java.lang.Integer size, java.lang.String type) {
+        this.url = java.util.Objects.requireNonNull(url, "url is required");
+        this.size = java.util.Objects.requireNonNull(size, "size is required");
+        this.type = java.util.Objects.requireNonNull(type, "type is required");
     }
-    return new ApplicationCacheResource(url, size, type);
-  }
+
+    /**
+     * Resource url.
+     */
+    public java.lang.String getUrl() {
+        return url;
+    }
+
+    /**
+     * Resource size.
+     */
+    public java.lang.Integer getSize() {
+        return size;
+    }
+
+    /**
+     * Resource type.
+     */
+    public java.lang.String getType() {
+        return type;
+    }
+
+    private static ApplicationCacheResource fromJson(JsonInput input) {
+        java.lang.String url = null;
+        java.lang.Integer size = null;
+        java.lang.String type = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "url":
+                    url = input.nextString();
+                    break;
+                case "size":
+                    size = input.nextNumber().intValue();
+                    break;
+                case "type":
+                    type = input.nextString();
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new ApplicationCacheResource(url, size, type);
+    }
 }

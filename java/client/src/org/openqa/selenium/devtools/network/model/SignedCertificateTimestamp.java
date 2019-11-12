@@ -1,238 +1,138 @@
-// Licensed to the Software Freedom Conservancy (SFC) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The SFC licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 package org.openqa.selenium.devtools.network.model;
 
-import static java.util.Objects.requireNonNull;
-
+import org.openqa.selenium.Beta;
 import org.openqa.selenium.json.JsonInput;
 
 /**
- * Details of a signed certificate timestamp (SCT)
+ * Details of a signed certificate timestamp (SCT).
  */
 public class SignedCertificateTimestamp {
 
-  private String status;
+    private final java.lang.String status;
 
-  private String origin;
+    private final java.lang.String origin;
 
-  private String logDescription;
+    private final java.lang.String logDescription;
 
-  private String logId;
+    private final java.lang.String logId;
 
-  private MonotonicTime timestamp;
+    private final org.openqa.selenium.devtools.network.model.TimeSinceEpoch timestamp;
 
-  private String hashAlgorithm;
+    private final java.lang.String hashAlgorithm;
 
-  private String signatureAlgorithm;
+    private final java.lang.String signatureAlgorithm;
 
-  private String signatureData;
+    private final java.lang.String signatureData;
 
-  private SignedCertificateTimestamp(String status, String origin, String logDescription,
-                                     String logId, MonotonicTime timestamp, String hashAlgorithm,
-                                     String signatureAlgorithm, String signatureData) {
-    this.status = requireNonNull(status, "'status' is required for SignedCertificateTimestamp");
-    this.origin = requireNonNull(origin, "'origin' is required for SignedCertificateTimestamp");
-    this.logDescription =
-        requireNonNull(logDescription,
-                       "'logDescription' is required for SignedCertificateTimestamp");
-    this.logId = requireNonNull(logId, "'logId' is required for SignedCertificateTimestamp");
-    this.timestamp =
-        requireNonNull(timestamp, "'timestamp' is required for SignedCertificateTimestamp");
-    this.hashAlgorithm =
-        requireNonNull(hashAlgorithm, "'hashAlgorithm' is required for SignedCertificateTimestamp");
-    this.signatureAlgorithm =
-        requireNonNull(signatureAlgorithm,
-                       "'signatureAlgorithm' is required for SignedCertificateTimestamp");
-    this.signatureData =
-        requireNonNull(signatureData, "'signatureData' is required for SignedCertificateTimestamp");
-  }
-
-  /**
-   * Validation status.
-   */
-  public String getStatus() {
-    return status;
-  }
-
-  /**
-   * Validation status.
-   */
-  public void setStatus(String status) {
-    this.status = status;
-  }
-
-  /**
-   * Origin.
-   */
-  public String getOrigin() {
-    return origin;
-  }
-
-  /**
-   * Origin.
-   */
-  public void setOrigin(String origin) {
-    this.origin = origin;
-  }
-
-  /**
-   * Log name / description.
-   */
-  public String getLogDescription() {
-    return logDescription;
-  }
-
-  /**
-   * Log name / description.
-   */
-  public void setLogDescription(String logDescription) {
-    this.logDescription = logDescription;
-  }
-
-  /**
-   * Log ID.
-   */
-  public String getLogId() {
-    return logId;
-  }
-
-  /**
-   * Log ID.
-   */
-  public void setLogId(String logId) {
-    this.logId = logId;
-  }
-
-  /**
-   * Issuance date.
-   */
-  public MonotonicTime getTimestamp() {
-    return timestamp;
-  }
-
-  /**
-   * Issuance date.
-   */
-  public void setTimestamp(MonotonicTime timestamp) {
-    this.timestamp = timestamp;
-  }
-
-  /**
-   * Hash algorithm.
-   */
-  public String getHashAlgorithm() {
-    return hashAlgorithm;
-  }
-
-  /**
-   * Hash algorithm.
-   */
-  public void setHashAlgorithm(String hashAlgorithm) {
-    this.hashAlgorithm = hashAlgorithm;
-  }
-
-  /**
-   * Signature algorithm.
-   */
-  public String getSignatureAlgorithm() {
-    return signatureAlgorithm;
-  }
-
-  /**
-   * Signature algorithm.
-   */
-  public void setSignatureAlgorithm(String signatureAlgorithm) {
-    this.signatureAlgorithm = signatureAlgorithm;
-  }
-
-  /**
-   * Signature data.
-   */
-  public String getSignatureData() {
-    return signatureData;
-  }
-
-  /**
-   * Signature data.
-   */
-  public void setSignatureData(String signatureData) {
-    this.signatureData = signatureData;
-  }
-
-  private static SignedCertificateTimestamp fromJson(JsonInput input) {
-
-    String status = null;
-
-    String origin = null;
-
-    String logDescription = null;
-
-    String logId = null;
-
-    MonotonicTime timestamp = null;
-
-    String hashAlgorithm = null;
-
-    String signatureAlgorithm = null;
-
-    String signatureData = null;
-
-    input.beginObject();
-
-    while (input.hasNext()) {
-
-      switch (input.nextName()) {
-        case "status":
-          status = input.nextString();
-          break;
-        case "origin":
-          origin = input.nextString();
-          break;
-        case "logDescription":
-          logDescription = input.nextString();
-          break;
-        case "logId":
-          logId = input.nextString();
-          break;
-        case "timestamp":
-          timestamp = MonotonicTime.parse(input.nextNumber());
-          break;
-        case "hashAlgorithm":
-          hashAlgorithm = input.nextString();
-          break;
-        case "signatureAlgorithm":
-          signatureAlgorithm = input.nextString();
-          break;
-        case "signatureData":
-          signatureData = input.nextString();
-          break;
-        default:
-          input.skipValue();
-          break;
-      }
-
+    public SignedCertificateTimestamp(java.lang.String status, java.lang.String origin, java.lang.String logDescription, java.lang.String logId, org.openqa.selenium.devtools.network.model.TimeSinceEpoch timestamp, java.lang.String hashAlgorithm, java.lang.String signatureAlgorithm, java.lang.String signatureData) {
+        this.status = java.util.Objects.requireNonNull(status, "status is required");
+        this.origin = java.util.Objects.requireNonNull(origin, "origin is required");
+        this.logDescription = java.util.Objects.requireNonNull(logDescription, "logDescription is required");
+        this.logId = java.util.Objects.requireNonNull(logId, "logId is required");
+        this.timestamp = java.util.Objects.requireNonNull(timestamp, "timestamp is required");
+        this.hashAlgorithm = java.util.Objects.requireNonNull(hashAlgorithm, "hashAlgorithm is required");
+        this.signatureAlgorithm = java.util.Objects.requireNonNull(signatureAlgorithm, "signatureAlgorithm is required");
+        this.signatureData = java.util.Objects.requireNonNull(signatureData, "signatureData is required");
     }
 
-    input.endObject();
+    /**
+     * Validation status.
+     */
+    public java.lang.String getStatus() {
+        return status;
+    }
 
-    return new SignedCertificateTimestamp(status, origin, logDescription, logId,
-                                          timestamp, hashAlgorithm,
-                                          signatureAlgorithm, signatureData);
+    /**
+     * Origin.
+     */
+    public java.lang.String getOrigin() {
+        return origin;
+    }
 
-  }
+    /**
+     * Log name / description.
+     */
+    public java.lang.String getLogDescription() {
+        return logDescription;
+    }
+
+    /**
+     * Log ID.
+     */
+    public java.lang.String getLogId() {
+        return logId;
+    }
+
+    /**
+     * Issuance date.
+     */
+    public org.openqa.selenium.devtools.network.model.TimeSinceEpoch getTimestamp() {
+        return timestamp;
+    }
+
+    /**
+     * Hash algorithm.
+     */
+    public java.lang.String getHashAlgorithm() {
+        return hashAlgorithm;
+    }
+
+    /**
+     * Signature algorithm.
+     */
+    public java.lang.String getSignatureAlgorithm() {
+        return signatureAlgorithm;
+    }
+
+    /**
+     * Signature data.
+     */
+    public java.lang.String getSignatureData() {
+        return signatureData;
+    }
+
+    private static SignedCertificateTimestamp fromJson(JsonInput input) {
+        java.lang.String status = null;
+        java.lang.String origin = null;
+        java.lang.String logDescription = null;
+        java.lang.String logId = null;
+        org.openqa.selenium.devtools.network.model.TimeSinceEpoch timestamp = null;
+        java.lang.String hashAlgorithm = null;
+        java.lang.String signatureAlgorithm = null;
+        java.lang.String signatureData = null;
+        input.beginObject();
+        while (input.hasNext()) {
+            switch(input.nextName()) {
+                case "status":
+                    status = input.nextString();
+                    break;
+                case "origin":
+                    origin = input.nextString();
+                    break;
+                case "logDescription":
+                    logDescription = input.nextString();
+                    break;
+                case "logId":
+                    logId = input.nextString();
+                    break;
+                case "timestamp":
+                    timestamp = input.read(org.openqa.selenium.devtools.network.model.TimeSinceEpoch.class);
+                    break;
+                case "hashAlgorithm":
+                    hashAlgorithm = input.nextString();
+                    break;
+                case "signatureAlgorithm":
+                    signatureAlgorithm = input.nextString();
+                    break;
+                case "signatureData":
+                    signatureData = input.nextString();
+                    break;
+                default:
+                    input.skipValue();
+                    break;
+            }
+        }
+        input.endObject();
+        return new SignedCertificateTimestamp(status, origin, logDescription, logId, timestamp, hashAlgorithm, signatureAlgorithm, signatureData);
+    }
 }
