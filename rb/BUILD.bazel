@@ -1,0 +1,16 @@
+load(
+    "@bazelruby_rules_ruby//ruby:defs.bzl",
+    "ruby_binary",
+    "ruby_library",
+    "ruby_test",
+    "ruby_rspec",
+)
+
+package(default_visibility = ["//:__subpackages__"])
+
+ruby_library(
+    name = "selenium-webdriver",
+    srcs = glob(["lib/**/*.rb"]),
+    includes = ["lib"],
+    deps = ["@app_bundle//:public_suffix"]
+)

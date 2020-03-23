@@ -165,3 +165,43 @@ container_pull(
     # selenium/standalone-firefox:3.141.59
     digest = "sha256:98d0cf6284a1560117811a7a47f95b38d81bd1fbd78551bcc58fa986abf2cb55",
 )
+
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
+git_repository(
+    name = "bazelruby_rules_ruby",
+    remote = "https://github.com/bazelruby/rules_ruby.git",
+    branch = "develop"
+)
+
+# # Importing rules_ruby from the parent directory for developing
+# # rules_ruby itself...
+# local_repository(
+#     name = "bazelruby_rules_ruby",
+#     path = "../rules_ruby",
+# )
+
+load(
+    "@bazelruby_rules_ruby//ruby:deps.bzl",
+    "rules_ruby_dependencies",
+    "rules_ruby_select_sdk",
+)
+
+rules_ruby_dependencies()
+
+load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
+
+bazel_skylib_workspace()
+
+rules_ruby_select_sdk(version = "host")
+
+load(
+    "@bazelruby_rules_ruby//ruby:defs.bzl",
+    "ruby_bundle",
+)
+
+ruby_bundle(
+    name = "app_bundle",
+    gemfile = "//rb:Gemfile",
+    gemfile_lock = "//rb:Gemfile.lock",
+)
