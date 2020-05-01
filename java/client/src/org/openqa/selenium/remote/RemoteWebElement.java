@@ -35,13 +35,6 @@ import org.openqa.selenium.WrapsDriver;
 import org.openqa.selenium.WrapsElement;
 import org.openqa.selenium.interactions.Coordinates;
 import org.openqa.selenium.interactions.Locatable;
-import org.openqa.selenium.internal.FindsByClassName;
-import org.openqa.selenium.internal.FindsByCssSelector;
-import org.openqa.selenium.internal.FindsById;
-import org.openqa.selenium.internal.FindsByLinkText;
-import org.openqa.selenium.internal.FindsByName;
-import org.openqa.selenium.internal.FindsByTagName;
-import org.openqa.selenium.internal.FindsByXPath;
 import org.openqa.selenium.io.Zip;
 
 import java.io.File;
@@ -52,9 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class RemoteWebElement implements WebElement, FindsByLinkText, FindsById, FindsByName,
-                                         FindsByTagName, FindsByClassName, FindsByCssSelector,
-                                         FindsByXPath, WrapsDriver, TakesScreenshot, Locatable {
+public class RemoteWebElement implements WebElement, WrapsDriver, TakesScreenshot, Locatable {
   private String foundBy;
   protected String id;
   protected RemoteWebDriver parent;
@@ -189,13 +180,21 @@ public class RemoteWebElement implements WebElement, FindsByLinkText, FindsById,
   }
 
   @Override
-  public List<WebElement> findElements(By by) {
-    return by.findElements(this);
+  public WebElement findElement(By locator) {
+    if (locator instanceof By.StandardLocator) {
+      return ((By.StandardLocator) locator).findElement(this, this::findElement);
+    } else {
+      return locator.findElement(this);
+    }
   }
 
   @Override
-  public WebElement findElement(By by) {
-    return by.findElement(this);
+  public List<WebElement> findElements(By locator) {
+    if (locator instanceof By.StandardLocator) {
+      return ((By.StandardLocator) locator).findElements(this, this::findElements);
+    } else {
+      return locator.findElements(this);
+    }
   }
 
   protected WebElement findElement(String using, String value) {
@@ -232,82 +231,66 @@ public class RemoteWebElement implements WebElement, FindsByLinkText, FindsById,
     return allElements;
   }
 
-  @Override
   public WebElement findElementById(String using) {
     return findElement("id", using);
   }
 
-  @Override
   public List<WebElement> findElementsById(String using) {
     return findElements("id", using);
   }
 
-  @Override
   public WebElement findElementByLinkText(String using) {
     return findElement("link text", using);
   }
 
-  @Override
   public List<WebElement> findElementsByLinkText(String using) {
     return findElements("link text", using);
   }
 
-  @Override
   public WebElement findElementByName(String using) {
     return findElement("name", using);
   }
 
-  @Override
   public List<WebElement> findElementsByName(String using) {
     return findElements("name", using);
   }
 
-  @Override
   public WebElement findElementByClassName(String using) {
     return findElement("class name", using);
   }
 
-  @Override
   public List<WebElement> findElementsByClassName(String using) {
     return findElements("class name", using);
   }
 
-  @Override
   public WebElement findElementByCssSelector(String using) {
     return findElement("css selector", using);
   }
 
-  @Override
   public List<WebElement> findElementsByCssSelector(String using) {
     return findElements("css selector", using);
   }
 
-  @Override
   public WebElement findElementByXPath(String using) {
     return findElement("xpath", using);
   }
 
-  @Override
   public List<WebElement> findElementsByXPath(String using) {
     return findElements("xpath", using);
   }
 
-  @Override
   public WebElement findElementByPartialLinkText(String using) {
     return findElement("partial link text", using);
   }
 
-  @Override
   public List<WebElement> findElementsByPartialLinkText(String using) {
     return findElements("partial link text", using);
   }
 
-  @Override
   public WebElement findElementByTagName(String using) {
     return findElement("tag name", using);
   }
 
-  @Override
   public List<WebElement> findElementsByTagName(String using) {
     return findElements("tag name", using);
   }
