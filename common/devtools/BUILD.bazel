@@ -1,0 +1,10 @@
+filegroup(
+    name="devtools-json",
+    srcs=[
+        "browser_protocol.json",
+        "js_protocol.json",
+    ],
+    visibility=[
+        "//java/client/src/org/openqa/selenium/devtools"
+    ],
+)

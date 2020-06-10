@@ -65,8 +65,7 @@ java_binary(
 genrule(
     name = "create-cdp-srcs",
     srcs = [
-        "browser_protocol.json",
-        "js_protocol.json",
+        "//common/devtools:devtools-json",
     ],
     outs = ["cdp.srcjar"],
     cmd = "$(location :cdp-client-generator) $@",
